@@ -1,0 +1,168 @@
+fileFormatVersion: 1
+guid: 2d183fba3d30f2e4d9a0184f2ec96ffc
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Camera01:
+    - 100000
+    - 400000
+    Camera02:
+    - 100002
+    - 400002
+    Camera03:
+    - 100004
+    - 400004
+    Camera04:
+    - 100006
+    - 400006
+    Direct01:
+    - 100008
+    - 400008
+    Direct01.Target:
+    - 100010
+    - 400010
+    Sky01:
+    - 100012
+    - 400012
+    background:
+    - 100014
+    - 400014
+    - 3300000
+    - 2300000
+    benches:
+    - 100016
+    - 400016
+    - 3300002
+    - 2300002
+    bottom_ground:
+    - 100018
+    - 400018
+    - 3300004
+    - 2300004
+    car01:
+    - 100020
+    - 400020
+    - 3300006
+    - 2300006
+    car02:
+    - 100022
+    - 400022
+    - 3300008
+    - 2300008
+    car03:
+    - 100024
+    - 400024
+    - 3300010
+    - 2300010
+    car04:
+    - 100026
+    - 400026
+    - 3300012
+    - 2300012
+    car05:
+    - 100028
+    - 400028
+    - 3300014
+    - 2300014
+    car06:
+    - 100030
+    - 400030
+    - 3300016
+    - 2300016
+    fence:
+    - 100032
+    - 400032
+    - 3300018
+    - 2300018
+    field:
+    - 100034
+    - 400034
+    - 3300020
+    - 2300020
+    footballseats:
+    - 100036
+    - 400036
+    - 3300022
+    - 2300022
+    goals:
+    - 100038
+    - 400038
+    - 3300024
+    - 2300024
+    grass_studs:
+    - 100040
+    - 400040
+    - 3300026
+    - 2300026
+    house:
+    - 100042
+    - 400042
+    - 3300028
+    - 2300028
+    landscape:
+    - 100044
+    - 400044
+    - 3300030
+    - 2300030
+    pine_trees:
+    - 100046
+    - 400046
+    - 3300032
+    - 2300032
+    pinetrees:
+    - 100048
+    - 400048
+    rocks:
+    - 100050
+    - 400050
+    - 3300034
+    - 2300034
+    //RootNode:
+    - 100052
+    - 400052
+    - 11100000
+    trees:
+    - 100054
+    - 400054
+    - 3300036
+    - 2300036
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: landscape
+    4300002: grass_studs
+    4300004: field
+    4300006: background
+    4300008: fence
+    4300010: footballseats
+    4300012: car01
+    4300014: car02
+    4300016: car03
+    4300018: car04
+    4300020: benches
+    4300022: car05
+    4300024: car06
+    4300026: trees
+    4300028: pine_trees
+    4300030: rocks
+    4300032: goals
+    4300034: house
+    4300036: bottom_ground

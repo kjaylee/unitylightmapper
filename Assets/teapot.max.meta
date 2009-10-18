@@ -1,0 +1,42 @@
+fileFormatVersion: 1
+guid: 7e1afe4d06d4d984ea78055a17c672da
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Plane01:
+    - 100000
+    - 400000
+    - 3300000
+    - 2300000
+    Teapot01:
+    - 100002
+    - 400002
+    - 3300002
+    - 2300002
+    //RootNode:
+    - 100004
+    - 400004
+    - 11100000
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Plane01
+    4300002: Teapot01

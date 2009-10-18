@@ -1,0 +1,174 @@
+fileFormatVersion: 1
+guid: 6f832c6ef22837c4c8793c981eda18aa
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    //RootNode:
+    - 100000
+    - 400000
+    - 11100000
+    Teapot01:
+    - 100002
+    - 400002
+    - 3300000
+    - 2300000
+    Podloga:
+    - 100004
+    - 400004
+    - 3300002
+    - 2300002
+    parapet02:
+    - 100006
+    - 400006
+    - 3300004
+    - 2300004
+    cushion05:
+    - 100008
+    - 400008
+    - 3300006
+    - 2300006
+    chair05:
+    - 100010
+    - 400010
+    - 3300008
+    - 2300008
+    cushion02:
+    - 100012
+    - 400012
+    - 3300010
+    - 2300010
+    chair02:
+    - 100014
+    - 400014
+    - 3300012
+    - 2300012
+    okno02:
+    - 100016
+    - 400016
+    - 3300014
+    - 2300014
+    framuga02:
+    - 100018
+    - 400018
+    - 3300016
+    - 2300016
+    parapet01:
+    - 100020
+    - 400020
+    - 3300018
+    - 2300018
+    rurki:
+    - 100022
+    - 400022
+    - 3300020
+    - 2300020
+    balustrada:
+    - 100024
+    - 400024
+    - 3300022
+    - 2300022
+    okno03:
+    - 100026
+    - 400026
+    - 3300024
+    - 2300024
+    okno01:
+    - 100028
+    - 400028
+    - 3300026
+    - 2300026
+    framuga03:
+    - 100030
+    - 400030
+    - 3300028
+    - 2300028
+    framuga01:
+    - 100032
+    - 400032
+    - 3300030
+    - 2300030
+    legs_table:
+    - 100034
+    - 400034
+    - 3300032
+    - 2300032
+    shelf_table:
+    - 100036
+    - 400036
+    - 3300034
+    - 2300034
+    table_top:
+    - 100038
+    - 400038
+    - 3300036
+    - 2300036
+    szafa_mala:
+    - 100040
+    - 400040
+    - 3300038
+    - 2300038
+    shelves:
+    - 100042
+    - 400042
+    - 3300040
+    - 2300040
+    szafa_duza:
+    - 100044
+    - 400044
+    - 3300042
+    - 2300042
+    zabudowa:
+    - 100046
+    - 400046
+    - 3300044
+    - 2300044
+    balustrada.dolna:
+    - 100048
+    - 400048
+    - 3300046
+    - 2300046
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: zabudowa
+    4300002: szafa_duza
+    4300004: shelves
+    4300006: szafa_mala
+    4300008: table_top
+    4300010: shelf_table
+    4300012: legs_table
+    4300014: framuga01
+    4300016: framuga03
+    4300018: okno01
+    4300020: okno03
+    4300022: balustrada
+    4300024: balustrada.dolna
+    4300026: rurki
+    4300028: parapet01
+    4300030: framuga02
+    4300032: okno02
+    4300034: chair02
+    4300036: cushion02
+    4300038: chair05
+    4300040: cushion05
+    4300042: parapet02
+    4300044: Podloga
+    4300046: Teapot01

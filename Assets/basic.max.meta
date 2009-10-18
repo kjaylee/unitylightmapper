@@ -1,0 +1,108 @@
+fileFormatVersion: 1
+guid: cf496f6fb44506648bae0dfabeac0da7
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Box05:
+    - 100000
+    - 400000
+    - 3300000
+    - 2300000
+    Box07:
+    - 100002
+    - 400002
+    - 3300002
+    - 2300002
+    Box08:
+    - 100004
+    - 400004
+    - 3300004
+    - 2300004
+    //RootNode:
+    - 100006
+    - 400006
+    - 11100000
+    Box06:
+    - 100008
+    - 400008
+    - 3300006
+    - 2300006
+    Plane01:
+    - 100010
+    - 400010
+    - 3300008
+    - 2300008
+    Box01:
+    - 100012
+    - 400012
+    - 3300010
+    - 2300010
+    Box02:
+    - 100014
+    - 400014
+    - 3300012
+    - 2300012
+    Box03:
+    - 100016
+    - 400016
+    - 3300014
+    - 2300014
+    Box04:
+    - 100018
+    - 400018
+    - 3300016
+    - 2300016
+    Teapot01:
+    - 100020
+    - 400020
+    - 3300018
+    - 2300018
+    Sphere01:
+    - 100022
+    - 400022
+    - 3300020
+    - 2300020
+    Box10:
+    - 100024
+    - 400024
+    - 3300022
+    - 2300022
+    Box09:
+    - 100026
+    - 400026
+    - 3300024
+    - 2300024
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Plane01
+    4300002: Box01
+    4300004: Box02
+    4300006: Box03
+    4300008: Box04
+    4300010: Box05
+    4300012: Box06
+    4300014: Box07
+    4300016: Box08
+    4300018: Sphere01
+    4300020: Box09
+    4300022: Box10
+    4300024: Teapot01

@@ -1,0 +1,117 @@
+fileFormatVersion: 1
+guid: 1527ea81c1821cd4ebaad6cc4fb0ef23
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Particle View 01:
+    - 100000
+    - 400000
+    corner_closet:
+    - 100002
+    - 400002
+    - 3300000
+    - 2300000
+    dressoir:
+    - 100004
+    - 400004
+    - 3300002
+    - 2300002
+    hat:
+    - 100006
+    - 400006
+    - 3300004
+    - 2300004
+    manequin:
+    - 100008
+    - 400008
+    - 3300006
+    - 2300006
+    red_box:
+    - 100010
+    - 400010
+    - 3300008
+    - 2300008
+    saddle:
+    - 100012
+    - 400012
+    - 3300010
+    - 2300010
+    shelf:
+    - 100014
+    - 400014
+    - 3300012
+    - 2300012
+    shoes:
+    - 100016
+    - 400016
+    - 3300014
+    - 2300014
+    shop:
+    - 100018
+    - 400018
+    - 3300016
+    - 2300016
+    //RootNode:
+    - 100020
+    - 400020
+    - 11100000
+    shop_stand_1:
+    - 100022
+    - 400022
+    - 3300018
+    - 2300018
+    shop_stand_2:
+    - 100024
+    - 400024
+    - 3300020
+    - 2300020
+    sweater:
+    - 100026
+    - 400026
+    - 3300022
+    - 2300022
+    wall_saddle:
+    - 100028
+    - 400028
+    - 3300024
+    - 2300024
+    window:
+    - 100030
+    - 400030
+    - 3300026
+    - 2300026
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: shop
+    4300002: window
+    4300004: shop_stand_1
+    4300006: shop_stand_2
+    4300008: sweater
+    4300010: hat
+    4300012: shoes
+    4300014: manequin
+    4300016: wall_saddle
+    4300018: red_box
+    4300020: shelf
+    4300022: dressoir
+    4300024: saddle
+    4300026: corner_closet

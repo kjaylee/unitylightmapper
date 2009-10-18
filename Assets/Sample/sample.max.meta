@@ -1,0 +1,230 @@
+fileFormatVersion: 1
+guid: f3c2b0b8c5f5ba54583fbfd376095aea
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    BLamp:
+    - 100000
+    - 400000
+    Cable1:
+    - 100002
+    - 400002
+    - 3300000
+    - 2300000
+    Cable2:
+    - 100004
+    - 400004
+    - 3300002
+    - 2300002
+    Group24:
+    - 100006
+    - 400006
+    Coridor:
+    - 100008
+    - 400008
+    - 3300004
+    - 2300004
+    DeskBack:
+    - 100010
+    - 400010
+    - 3300006
+    - 2300006
+    DeskBottom:
+    - 100012
+    - 400012
+    - 3300008
+    - 2300008
+    DeskFront:
+    - 100014
+    - 400014
+    - 3300010
+    - 2300010
+    DeskMiddle:
+    - 100016
+    - 400016
+    - 3300012
+    - 2300012
+    DeskTop:
+    - 100018
+    - 400018
+    - 3300014
+    - 2300014
+    Handle1:
+    - 100020
+    - 400020
+    - 3300016
+    - 2300016
+    Handle2:
+    - 100022
+    - 400022
+    - 3300018
+    - 2300018
+    MLamp1:
+    - 100024
+    - 400024
+    MLamp2:
+    - 100026
+    - 400026
+    MiniLamp1:
+    - 100028
+    - 400028
+    - 3300020
+    - 2300020
+    MiniLamp2:
+    - 100030
+    - 400030
+    - 3300022
+    - 2300022
+    MiniLampBack1:
+    - 100032
+    - 400032
+    - 3300024
+    - 2300024
+    Particle View 01:
+    - 100034
+    - 400034
+    Particle dfgh01:
+    - 100036
+    - 400036
+    MiniLampBack2:
+    - 100038
+    - 400038
+    - 3300026
+    - 2300026
+    Ceiling:
+    - 100040
+    - 400040
+    - 3300034
+    - 2300034
+    Floor:
+    - 100042
+    - 400042
+    - 3300036
+    - 2300036
+    Furniture:
+    - 100044
+    - 400044
+    - 3300042
+    - 2300042
+    Furniture_doors:
+    - 100046
+    - 400046
+    - 3300046
+    - 2300046
+    Lamp:
+    - 100048
+    - 400048
+    - 3300050
+    - 2300050
+    Legs:
+    - 100050
+    - 400050
+    - 3300054
+    - 2300054
+    Windows:
+    - 100052
+    - 400052
+    - 3300062
+    - 2300062
+    Wall:
+    - 100054
+    - 400054
+    - 3300028
+    - 2300028
+    dfgh:
+    - 100072
+    - 400072
+    fgh:
+    - 100076
+    - 400076
+    fgh 1:
+    - 100078
+    - 400078
+    obj_02:
+    - 100084
+    - 400084
+    obj_45:
+    - 100116
+    - 400116
+    //RootNode:
+    - 100118
+    - 400118
+    - 11100000
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Rectangle02
+    4300002: Object01
+    4300004: Object03
+    4300006: Object05
+    4300008: Object06
+    4300010: Object09
+    4300012: Object10
+    4300014: Object42
+    4300016: Object43
+    4300018: Object44
+    4300020: Box04
+    4300022: 'di  ban '
+    4300024: 'xin ding '
+    4300026: obj_09
+    4300028: obj_07
+    4300030: obj_06
+    4300032: obj_05
+    4300034: obj_03
+    4300036: Object07
+    4300038: Object08
+    4300040: Object41
+    4300042: obj_06
+    4300044: obj_02
+    4300046: obj_05
+    4300048: obj_21
+    4300050: obj_22
+    4300052: obj_23
+    4300054: obj_01
+    4300056: obj_01
+    4300058: obj_04
+    4300060: obj_08
+    4300062: Box01
+    4300064: Box07
+    4300066: Windows
+    4300068: Floor
+    4300070: Ceiling
+    4300072: Lamp
+    4300074: Furniture
+    4300076: Legs
+    4300078: Furniture_doors
+    4300080: Box02
+    4300082: Box03
+    4300084: Coridor
+    4300086: Wall
+    4300088: DeskBottom
+    4300090: DeskTop
+    4300092: DeskBack
+    4300094: DeskFront
+    4300096: DeskMiddle
+    4300098: Handle1
+    4300100: MiniLamp1
+    4300102: MiniLampBack1
+    4300104: MiniLampBack2
+    4300106: MiniLamp2
+    4300108: Handle2
+    4300110: Cable2
+    4300112: Cable1
