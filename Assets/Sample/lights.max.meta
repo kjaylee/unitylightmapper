@@ -1,0 +1,36 @@
+fileFormatVersion: 1
+guid: 6fb572f1ece4ce24e892211c6dba5838
+ModelImporter:
+  importerVersion: 4
+  meshes:
+    scaleFactor: 0.01
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    generation: 0
+    calculateNormals: 0
+    smoothingAngle: 60
+    splitTangents: 0
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Direct01:
+    - 100000
+    - 400000
+    Direct01.Target:
+    - 100002
+    - 400002
+    VRayLight01:
+    - 100004
+    - 400004
+    //RootNode:
+    - 100006
+    - 400006
+    - 11100000
