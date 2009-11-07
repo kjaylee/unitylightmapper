@@ -1,16 +1,33 @@
-Shader "ExternalLightmappingTool/LightmappedDiffuse" {
+Shader "ExternalLightmappingTool/LightmappedDiffuseAlpha" {
 	Properties {
 		_LightmapModifier ("Lightmap Modifier", Color) = (0.5,0.5,0.5,1)
 		_Color ("Main Color", Color) = (1,1,1,1)
 		_MainTex ("Base (RGB)", 2D) = "white" {}
 		_LightMap ("Lightmap (RGB)", 2D) = "lightmap" { LightmapMode } 
 	}
-	
-	//Three texture cards
 	SubShader {
+		Tags {"Queue"="Transparent"}
+		Blend One One
+		ColorMask RGB
+		
+		// Alpha mask pass
+		Pass {
+			Name "BASE"
+			Blend Zero OneMinusSrcColor
+			ColorMask RGBA
+			Tags {"LightMode" = "Always"}
+			
+			SetTexture [_MainTex]
+			{
+				constantColor (0,0,0,0)
+				combine constant, texture alpha
+			}
+		}
+		
 		// Ambient pass
 		Pass {
 			Name "BASE"
+			Blend SrcAlpha OneMinusSrcAlpha
 			Tags {"LightMode" = "PixelOrNone"}
 			Color [_PPLAmbient]
 			BindChannels {
@@ -32,6 +49,7 @@ Shader "ExternalLightmappingTool/LightmappedDiffuse" {
 		// Vertex lights
 		Pass {
 			Name "BASE"
+			Blend SrcAlpha OneMinusSrcAlpha
 			Tags {"LightMode" = "Vertex"}
 			Material {
 				Diffuse [_Color]
@@ -59,8 +77,7 @@ Shader "ExternalLightmappingTool/LightmappedDiffuse" {
 				combine texture * previous DOUBLE, texture * primary
 			}
 		}
-		UsePass "Diffuse/PPL"
+		UsePass "Transparent/Diffuse/PPL"
 	}
-	
-	FallBack "ExternalLightmappingTool/LightmappedVertexLit", 1
+	//FallBack "ExternalLightmappingTool/LightmappedVertexLitAlpha", 1
 }
