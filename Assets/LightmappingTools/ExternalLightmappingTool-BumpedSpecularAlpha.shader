@@ -1,4 +1,4 @@
-Shader "ExternalLightmappingTool/LightmappedBumpedSpecular" {
+Shader "ExternalLightmappingTool/LightmappedBumpedSpecularAlpha" {
      Properties {
           _LightmapModifier ("Lightmap Modifier", Color) = (0.5,0.5,0.5,1)
           _Color ("Main Color", Color) = (1,1,1,1)
@@ -9,8 +9,9 @@ Shader "ExternalLightmappingTool/LightmappedBumpedSpecular" {
           _LightMap ("Lightmap (RGB)", 2D) = "lightmap" { LightmapMode } 
      }
      SubShader {
-          UsePass "ExternalLightmappingTool/LightmappedDiffuse/BASE"
-          UsePass "Bumped Specular/PPL"
+	  Tags {Queue=Transparent}
+          UsePass "ExternalLightmappingTool/LightmappedDiffuseAlpha/BASE"
+          UsePass "Transparent/Bumped Specular/PPL"
      }
      FallBack "ExternalLightmappingTool/LightmappedVertexLit", 1
 }
