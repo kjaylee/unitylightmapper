@@ -66,74 +66,77 @@ class CalcArea
 
 
             //Overlapping test
-            Shader finded = Shader.Find("ExternalLightmappingTool/uvDebug");
-            if (finded == null)
+            if (SystemInfo.supportsRenderTextures)
             {
-                Debug.LogError("Cannot find uvDebug shader within LightmappingTools folder!");
-                return;
-            }
-
-            int res = 128;
-
-
-
-            RenderTexture rt = RenderTexture.GetTemporary(res, res, 0);
-            RenderTexture.active = rt;
-
-
-            if (Camera.current == null)
-            {
-                Camera.SetupCurrent(Camera.main);
-            }
-
-            RenderTexture oldRT = RenderTexture.active;
-            rt = RenderTexture.GetTemporary(res, res, 0);
-            RenderTexture.active = rt;
-
-            GL.Clear(true, true, Color.black);
-
-            Material mat = new Material(finded);
-
-            Mesh mesh = temp.sharedMesh;
-            mat.SetPass(0);
-            GL.PushMatrix();
-            GL.LoadOrtho();
-            Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
-            GL.PopMatrix();
-            UnityEngine.Object.DestroyImmediate(mat);
-
-            Texture2D texture = new Texture2D(res, res, TextureFormat.ARGB32, false);
-            texture.ReadPixels(new Rect(0, 0, res, res), 0, 0);
-            texture.Apply();
-            RenderTexture.active = oldRT;
-            RenderTexture.ReleaseTemporary(rt);
-            UnityEngine.Object.DestroyImmediate(rt);
-            //byte[] bytes = texture.EncodeToPNG();
-            //File.WriteAllBytes(Application.dataPath + "/../test.png", bytes);
-            Color[] tmp = texture.GetPixels();
-
-            int i = 0;
-            int incorrect = 0;
-            for (; i < tmp.Length; i++)
-            {
-                if (tmp[i].r > 0.6f)
+                Shader finded = Shader.Find("ExternalLightmappingTool/uvDebug");
+                if (finded == null)
                 {
-                    incorrect++;
-                    texture.SetPixel(i % res, i / res, Color.red);
+                    Debug.LogError("Cannot find uvDebug shader within LightmappingTools folder!");
+                    return;
                 }
-            }
+
+                int res = 128;
 
 
-            if (incorrect * 300 > res * res)
-            {
+
+                RenderTexture rt = RenderTexture.GetTemporary(res, res, 0);
+                RenderTexture.active = rt;
+
+
+                if (Camera.current == null)
+                {
+                    Camera.SetupCurrent(Camera.main);
+                }
+
+                RenderTexture oldRT = RenderTexture.active;
+                rt = RenderTexture.GetTemporary(res, res, 0);
+                RenderTexture.active = rt;
+
+                GL.Clear(true, true, Color.black);
+
+                Material mat = new Material(finded);
+
+                Mesh mesh = temp.sharedMesh;
+                mat.SetPass(0);
+                GL.PushMatrix();
+                GL.LoadOrtho();
+                Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
+                GL.PopMatrix();
+                UnityEngine.Object.DestroyImmediate(mat);
+
+                Texture2D texture = new Texture2D(res, res, TextureFormat.ARGB32, false);
+                texture.ReadPixels(new Rect(0, 0, res, res), 0, 0);
                 texture.Apply();
-                LightmappingTool.overlapping2.Add(path);
-                LightmappingTool.overlapping2.Add(texture);
-                LightmappingTool.overlapping2.Add(temp.transform);
-            }
-            else
-            {
-                UnityEngine.Object.DestroyImmediate(texture);
+                RenderTexture.active = oldRT;
+                RenderTexture.ReleaseTemporary(rt);
+                UnityEngine.Object.DestroyImmediate(rt);
+                //byte[] bytes = texture.EncodeToPNG();
+                //File.WriteAllBytes(Application.dataPath + "/../test.png", bytes);
+                Color[] tmp = texture.GetPixels();
+
+                int i = 0;
+                int incorrect = 0;
+                for (; i < tmp.Length; i++)
+                {
+                    if (tmp[i].r > 0.6f)
+                    {
+                        incorrect++;
+                        texture.SetPixel(i % res, i / res, Color.red);
+                    }
+                }
+
+
+                if (incorrect * 300 > res * res)
+                {
+                    texture.Apply();
+                    LightmappingTool.overlapping2.Add(path);
+                    LightmappingTool.overlapping2.Add(texture);
+                    LightmappingTool.overlapping2.Add(temp.transform);
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(texture);
+                }
             }
             //UnityEngine.Object.DestroyImmediate(texture);
         }
@@ -162,75 +165,78 @@ class CalcArea
                     normalized = false;
                 }
             }
-            //Overlapping test
-            Shader finded = Shader.Find("ExternalLightmappingTool/uvDebug");
-            if (finded == null)
+            if (SystemInfo.supportsRenderTextures)
             {
-                Debug.LogError("Cannot find uvDebug shader within LightmappingTools folder!");
-                return;
-            }
-
-            int res = 128;
-
-
-
-            RenderTexture rt = RenderTexture.GetTemporary(res, res, 0);
-            RenderTexture.active = rt;
-
-
-            if (Camera.current == null)
-            {
-                Camera.SetupCurrent(Camera.main);
-            }
-
-            RenderTexture oldRT = RenderTexture.active;
-            rt = RenderTexture.GetTemporary(res, res, 0);
-            RenderTexture.active = rt;
-
-            GL.Clear(true, true, Color.black);
-
-            Material mat = new Material(finded);
-
-            Mesh mesh = temp.sharedMesh;
-            mat.SetPass(0);
-            GL.PushMatrix();
-            GL.LoadOrtho();
-            Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
-            GL.PopMatrix();
-            UnityEngine.Object.DestroyImmediate(mat);
-
-            Texture2D texture = new Texture2D(res, res, TextureFormat.ARGB32, false);
-            texture.ReadPixels(new Rect(0, 0, res, res), 0, 0);
-            texture.Apply();
-            RenderTexture.active = oldRT;
-            RenderTexture.ReleaseTemporary(rt);
-            UnityEngine.Object.DestroyImmediate(rt);
-            //byte[] bytes = texture.EncodeToPNG();
-            //File.WriteAllBytes(Application.dataPath + "/../test.png", bytes);
-            Color[] tmp = texture.GetPixels();
-
-            int i = 0;
-            int incorrect = 0;
-            for (; i < tmp.Length; i++)
-            {
-                if (tmp[i].r > 0.6f)
+                //Overlapping test
+                Shader finded = Shader.Find("ExternalLightmappingTool/uvDebug");
+                if (finded == null)
                 {
-                    incorrect++;
-                    texture.SetPixel(i % res, i / res, Color.red);
+                    Debug.LogError("Cannot find uvDebug shader within LightmappingTools folder!");
+                    return;
                 }
-            }
+
+                int res = 128;
 
 
-            if (incorrect * 300 > res * res)
-            {
+
+                RenderTexture rt = RenderTexture.GetTemporary(res, res, 0);
+                RenderTexture.active = rt;
+
+
+                if (Camera.current == null)
+                {
+                    Camera.SetupCurrent(Camera.main);
+                }
+
+                RenderTexture oldRT = RenderTexture.active;
+                rt = RenderTexture.GetTemporary(res, res, 0);
+                RenderTexture.active = rt;
+
+                GL.Clear(true, true, Color.black);
+
+                Material mat = new Material(finded);
+
+                Mesh mesh = temp.sharedMesh;
+                mat.SetPass(0);
+                GL.PushMatrix();
+                GL.LoadOrtho();
+                Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
+                GL.PopMatrix();
+                UnityEngine.Object.DestroyImmediate(mat);
+
+                Texture2D texture = new Texture2D(res, res, TextureFormat.ARGB32, false);
+                texture.ReadPixels(new Rect(0, 0, res, res), 0, 0);
                 texture.Apply();
-                LightmappingTool.overlapping.Add(path);
-                LightmappingTool.overlapping.Add(texture);
-                LightmappingTool.overlapping.Add(temp.transform);
-            }
-            else
-            {
-                UnityEngine.Object.DestroyImmediate(texture);
+                RenderTexture.active = oldRT;
+                RenderTexture.ReleaseTemporary(rt);
+                UnityEngine.Object.DestroyImmediate(rt);
+                //byte[] bytes = texture.EncodeToPNG();
+                //File.WriteAllBytes(Application.dataPath + "/../test.png", bytes);
+                Color[] tmp = texture.GetPixels();
+
+                int i = 0;
+                int incorrect = 0;
+                for (; i < tmp.Length; i++)
+                {
+                    if (tmp[i].r > 0.6f)
+                    {
+                        incorrect++;
+                        texture.SetPixel(i % res, i / res, Color.red);
+                    }
+                }
+
+
+                if (incorrect * 300 > res * res)
+                {
+                    texture.Apply();
+                    LightmappingTool.overlapping.Add(path);
+                    LightmappingTool.overlapping.Add(texture);
+                    LightmappingTool.overlapping.Add(temp.transform);
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(texture);
+                }
             }
             //UnityEngine.Object.DestroyImmediate(texture);
         }
