@@ -205,6 +205,12 @@ public class LightmappingTool : EditorWindow
                 temp.Add(tmp.name);
                 shaderBuffer.Add(tmp);
             }
+            tmp = (Shader)AssetDatabase.LoadAssetAtPath("Assets/LightmappingTools/ExternalLightmappingTool-VertexLitAlpha.shader", typeof(Shader));
+            if (!temp.Contains(tmp.name))
+            {
+                temp.Add(tmp.name);
+                shaderBuffer.Add(tmp);
+            }
             tmp = (Shader)AssetDatabase.LoadAssetAtPath("Assets/LightmappingTools/ExternalLightmappingTool-BumpedDiffuse.shader", typeof(Shader));
             if (!temp.Contains(tmp.name))
             {
@@ -217,7 +223,12 @@ public class LightmappingTool : EditorWindow
                 temp.Add(tmp.name);
                 shaderBuffer.Add(tmp);
             }
-
+            tmp = (Shader)AssetDatabase.LoadAssetAtPath("Assets/LightmappingTools/ExternalLightmappingTool-BumpedSpecularAlpha.shader", typeof(Shader));
+            if (!temp.Contains(tmp.name))
+            {
+                temp.Add(tmp.name);
+                shaderBuffer.Add(tmp);
+            }
         }
         catch
         {
