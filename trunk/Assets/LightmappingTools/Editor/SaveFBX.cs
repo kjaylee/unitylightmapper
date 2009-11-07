@@ -701,7 +701,7 @@ class SaveFBX
                     sb.Append("            Property: \"UVSet\", \"KString\", \"\", \"UVChannel_1\"\r\n");
                     sb.Append("        }\r\n");
                     //sb.Append("        Media: \"Video::" +@ta2[0] +"_diff"+ "\"\r\n");
-                    sb.Append("        FileName: \"" + (ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
+                    sb.Append("        FileName: \"" + (ProPath + AssetDatabase.GetAssetPath(tex0)) + "\"\r\n");
                     //sb.Append("        RelativeFilename: \"" +  @(ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
                     sb.Append("        ModelUVTranslation: 0,0\r\n");
                     sb.Append("        ModelUVScaling: 1,1\r\n");
@@ -733,7 +733,7 @@ class SaveFBX
                     sb.Append("            Property: \"UVSet\", \"KString\", \"\", \"UVChannel_1\"\r\n");
                     sb.Append("        }\r\n");
                     //sb.Append("        Media: \"Video::" +@ta2[0]+"_bump" + "\"\r\n");
-                    sb.Append("        FileName: \"" + (ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
+                    sb.Append("        FileName: \"" + (ProPath + AssetDatabase.GetAssetPath(tex0)) + "\"\r\n");
                     //sb.Append("        RelativeFilename: \"" +  (ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
                     sb.Append("        ModelUVTranslation: 0,0\r\n");
                     sb.Append("        ModelUVScaling: 1,1\r\n");
