@@ -21,11 +21,13 @@ class SaveFBX
     {
         CalcArea.whichLightmap = 1;
         offsetsArray = new ArrayList();
-        using (StreamWriter sw = new StreamWriter("MaxFiles\\" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx"))
+
+        //TextWriter stringWriter = new StringWriter();
+        using (TextWriter sw = new StreamWriter("MaxFiles\\" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx"))
         {
             EditorUtility.DisplayProgressBar("Exporting FBX", "Setting headers...", 0.1f);
             StringBuilder sb = new StringBuilder();
-			StringBuilder sb2 = new StringBuilder();
+			//StringBuilder sb2 = new StringBuilder();
 			//sb.Append(sb2);
             sb.Append(FBXHeader());
             //FBX Definitions
@@ -63,8 +65,8 @@ class SaveFBX
             sb.Append("        Count: ");
             sb.Append(textures);
             sb.Append("\r\n    }\r\n");
-            
             */
+            
             sb.Append("}\r\n\r\n");
             sb.Append("; Object properties\r\n");
             sb.Append(";------------------------------------------------------------------\r\n");
@@ -92,6 +94,9 @@ class SaveFBX
                 sb.Append("        Shading: T\r\n");
                 sb.Append("        Culling: \"CullingOff\"\r\n");
                 sb.Append("        Vertices: ");
+                sw.Write(sb.ToString()); //new
+                sb.Length = 0; //new
+
 
                 int[] vertexoffsets = new int[mf.Length + 1];
                 int vertexoffset = 0;
@@ -111,10 +116,16 @@ class SaveFBX
                     {
                         vrt = mf[j].transform.TransformPoint(vert);
                         vecArray[i] = vrt;
-                        sb.Append(Convert.ToString((double)-vrt.x).Replace(',', '.')).Append(',').Append(Convert.ToString((double)vrt.y).Replace(',', '.')).Append(',').Append(Convert.ToString((double)vrt.z).Replace(',', '.')).Append(',');
+                        sw.Write(Convert.ToString((double)-vrt.x).Replace(',', '.'));
+                        sw.Write(',');
+                        sw.Write(Convert.ToString((double)vrt.y).Replace(',', '.'));
+
+                        sw.Write(',');
+                        sw.Write(Convert.ToString((double)vrt.z).Replace(',', '.'));
+                        sw.Write(',');
                         if (i % 3 == 0)
                         {
-                            sb.Append("\r\n        ");
+                            sw.Write("\r\n        ");
                         }
                         i++;
                     }
@@ -122,7 +133,7 @@ class SaveFBX
                     vertexoffset += ((MeshFilter)mf[j]).sharedMesh.vertexCount;
                     vertexoffsets[j + 1] = vertexoffset;
                 }
-                sb.Append("\r\n        PolygonVertexIndex: ");
+                sw.Write("\r\n        PolygonVertexIndex: ");
 
 //############## EXPORTING TRIANGLES
                 int k = 0;
@@ -133,27 +144,32 @@ class SaveFBX
                     for (int i = 0; i < triangles.Length; i+=3)
                     {
                         //Mental Ray + VRay
-                        sb.Append((triangles[i] + vertexoffsets[k])).Append(',').Append((triangles[i+2] + vertexoffsets[k])).Append(',').Append((-(triangles[i+1] + vertexoffsets[k] + 1))).Append(',');
+                        sw.Write((triangles[i] + vertexoffsets[k]));
+                        sw.Write(',');
+                        sw.Write((triangles[i+2] + vertexoffsets[k]));
+                        sw.Write(',');
+                        sw.Write((-(triangles[i+1] + vertexoffsets[k] + 1)));
+                        sw.Write(',');
                         
                         //Scanline
                         //sb.Append((triangles[i] + vertexoffsets[k])).Append(',').Append((triangles[i + 2] + vertexoffsets[k])).Append(',').Append((-(triangles[i + 1] + vertexoffsets[k] + 1))).Append(',');
                         //Experiment
                         //sb.Append((triangles[i + 2] + vertexoffsets[k])).Append(',').Append((triangles[i] + vertexoffsets[k])).Append(',').Append((-(triangles[i+1] + vertexoffsets[k] + 1))).Append(',');
-                        if (i % 9 == 0) sb.Append("\r\n        ");
+                        if (i % 9 == 0) sw.Write("\r\n        ");
 
                     }
                     k++;
                 }
-                sb.Append("\r\n        GeometryVersion: 124\r\n");
-                sb.Append("        LayerElementNormal: 0 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"\"\r\n");
-                sb.Append("            MappingInformationType: \"ByVertice\"\r\n");
-                sb.Append("            ReferenceInformationType: \"Direct\"\r\n");
+                sw.Write("\r\n        GeometryVersion: 124\r\n");
+                sw.Write("        LayerElementNormal: 0 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"\"\r\n");
+                sw.Write("            MappingInformationType: \"ByVertice\"\r\n");
+                sw.Write("            ReferenceInformationType: \"Direct\"\r\n");
 
 //############## NORMALS EXPORTING
                 EditorUtility.DisplayProgressBar("Exporting FBX", "Writing normals for lightmap " + (model+1), 0.5f);
-                sb.Append("            Normals: ");
+                sw.Write("            Normals: ");
                 Matrix4x4 transformMatrix;
                 Vector3[] normals;
 
@@ -164,33 +180,38 @@ class SaveFBX
                     for (int i = 0; i < normals.Length; i++)
                     {
                         vrt = transformMatrix.MultiplyVector(normals[i]);
-                        
-                        sb.Append(Convert.ToString((double)-vrt.x).Replace(',', '.')).Append(',').Append(Convert.ToString((double)vrt.y).Replace(',', '.')).Append(',').Append(Convert.ToString((double)vrt.z).Replace(',', '.')).Append(',');
-                        if ((i & 3) == 0) sb.Append("\r\n            ");
+
+                        sw.Write(Convert.ToString((double)-vrt.x).Replace(',', '.'));
+                        sw.Write(',');
+                        sw.Write(Convert.ToString((double)vrt.y).Replace(',', '.'));
+                        sw.Write(',');
+                        sw.Write(Convert.ToString((double)vrt.z).Replace(',', '.'));
+                        sw.Write(',');
+                        if ((i & 3) == 0) sw.Write("\r\n            ");
                     }
                 }
-                sb.Append("\r\n        }\r\n");
+                sw.Write("\r\n        }\r\n");
 
 
 //############## UV Exporting
                 EditorUtility.DisplayProgressBar("Exporting FBX", "Writing UV's for lightmap " + (model+1), 0.7f);
-                sb.Append("        LayerElementUV: 0 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"UVChannel_1\"\r\n");
-                sb.Append("            MappingInformationType: \"ByVertice\"\r\n");
-                sb.Append("            ReferenceInformationType: \"Direct\"\r\n");
+                sw.Write("        LayerElementUV: 0 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"UVChannel_1\"\r\n");
+                sw.Write("            MappingInformationType: \"ByVertice\"\r\n");
+                sw.Write("            ReferenceInformationType: \"Direct\"\r\n");
 
-                sb.Append("            UV: ");
+                sw.Write("            UV: ");
                 foreach (MeshFilter mesh in mf)
                 {
                     if (mesh.sharedMesh.uv.Length < mesh.sharedMesh.vertexCount)
                     {
                         for (int j = 0; j < mesh.sharedMesh.vertexCount; j++)
                         {
-                            sb2.Append("0.0!0.0!");
+                            sb.Append("0.0!0.0!");
                             if (j % 4 == 0)
                             {
-                                sb2.Append("\r\n            ");
+                                sb.Append("\r\n            ");
                             }
                         }
                     }
@@ -199,32 +220,33 @@ class SaveFBX
                         int i = 0;
                         foreach (Vector2 v in mesh.sharedMesh.uv)
                         {
-                            sb2.Append((double)v.x).Append('!').Append((double)v.y).Append('!');
+                            sb.Append((double)v.x).Append('!').Append((double)v.y).Append('!');
                             if ((i & 7) == 0)
                             {
-                                sb2.Append("\r\n            ");
+                                sb.Append("\r\n            ");
                             }
                             i++;
                         }
                     }
                     
                 }
-				sb2.Replace(',','.');
-				sb2.Replace('!',',');
-				sb.Append(sb2);
-				sb2.Length = 0;
-                sb.Append("\r\n        }\r\n");
+				sb.Replace(',','.');
+				sb.Replace('!',',');
+				//sb.Append(sb2);
+                sw.Write(sb.ToString());
+				sb.Length = 0;
+                sw.Write("\r\n        }\r\n");
 
 
 
 //############## UV2 Exporting
-                sb.Append("        LayerElementUV: 1 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"UVChannel_2\"\r\n");
-                sb.Append("            MappingInformationType: \"ByVertice\"\r\n");
-                sb.Append("            ReferenceInformationType: \"Direct\"\r\n");
+                sw.Write("        LayerElementUV: 1 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"UVChannel_2\"\r\n");
+                sw.Write("            MappingInformationType: \"ByVertice\"\r\n");
+                sw.Write("            ReferenceInformationType: \"Direct\"\r\n");
 
-                sb.Append("            UV: ");
+                sw.Write("            UV: ");
                 foreach (MeshFilter mesh in mf)
                 {
                     if (mesh.sharedMesh.uv2.Length < mesh.sharedMesh.vertexCount)
@@ -232,10 +254,10 @@ class SaveFBX
                         Debug.Log(mesh.name + " has less uv verticles then mesh verticles");
                         for (int j = 0; j < mesh.sharedMesh.vertexCount; j++)
                         {
-                            sb2.Append("0.0!0.0!");
+                            sb.Append("0.0!0.0!");
                             //if (j % 4 == 0)
                             //{
-                                sb2.Append("\r\n            ");
+                                sb.Append("\r\n            ");
                             //}
                         }
                     }
@@ -244,29 +266,30 @@ class SaveFBX
                         int i = 0;
                         foreach (Vector2 v in mesh.sharedMesh.uv2)
                         {
-                            sb2.Append((double)v.x).Append('!').Append((double)v.y).Append('!');
+                            sb.Append((double)v.x).Append('!').Append((double)v.y).Append('!');
                             //if ((i & 2) == 0)
                             //{
-                                sb2.Append("\r\n            ");
+                                sb.Append("\r\n            ");
                             //}
                             i++;
                         }
-                        sb2.Append("\r\n            \r\n            ");
+                        sb.Append("\r\n            \r\n            ");
                     }
                 }
-				sb2.Replace(',','.');
-				sb2.Replace('!',',');
-				sb.Append(sb2);
-				sb2.Length = 0;
-                sb.Append("\r\n        }\r\n");
+				sb.Replace(',','.');
+				sb.Replace('!',',');
+				//sb.Append(sb2);
+                sw.Write(sb.ToString());
+				sb.Length = 0;
+                sw.Write("\r\n        }\r\n");
 
 //############## UV3 Exporting
-                sb.Append("        LayerElementUV: 2 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"UVChannel_3\"\r\n");
-                sb.Append("            MappingInformationType: \"ByVertice\"\r\n");
-                sb.Append("            ReferenceInformationType: \"Direct\"\r\n");
-                sb.Append("            UV: ");
+                sw.Write("        LayerElementUV: 2 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"UVChannel_3\"\r\n");
+                sw.Write("            MappingInformationType: \"ByVertice\"\r\n");
+                sw.Write("            ReferenceInformationType: \"Direct\"\r\n");
+                sw.Write("            UV: ");
 
 //############## Preparing UV3 coordinates
                 Rect[] uvs = CalcArea.CalculateArea(mf, Convert.ToInt32(128 * Math.Pow(2,(Convert.ToInt32((int) LightmappingTool.res[model])))),transformedVerticles);
@@ -297,38 +320,39 @@ class SaveFBX
                     {
                         try
                         {
-                            sb2.Append(((double)uvs[kk].x + v.x*uvs[kk].width)).Append('!').Append(((double)uvs[kk].y + v.y*uvs[kk].height)).Append('!');
+                            sb.Append(((double)uvs[kk].x + v.x*uvs[kk].width)).Append('!').Append(((double)uvs[kk].y + v.y*uvs[kk].height)).Append('!');
                             //sb2.Append(Math.Round((double)((uvs[kk].x + ((v.x - offsets[kk].xMin) * uvs[kk].width / (offsets[kk].xMax - offsets[kk].xMin)))))).Append('!').Append(Math.Round((double)(uvs[kk].y + ((v.y - offsets[kk].yMin) * uvs[kk].height / (offsets[kk].yMax - offsets[kk].yMin))))).Append('!');
                         }
                         catch
                         {
-                            sb2.Append("0.0!0.0!");
+                            sb.Append("0.0!0.0!");
                             Debug.Log("Non-Valid UV on " + mesh.name);
                         }
-                        if ((i & 3) == 0) sb2.Append("\r\n            ");
+                        if ((i & 3) == 0) sb.Append("\r\n            ");
                         i++;
                     }
 
                     kk++;
-                    sb2.Append("\r\n            ");
+                    sb.Append("\r\n            ");
                 }
-				sb2.Replace(',','.');
-				sb2.Replace('!',',');
-				sb.Append(sb2);
-				sb2.Length = 0;
-                sb.Append("\r\n        }\r\n");
+				sb.Replace(',','.');
+				sb.Replace('!',',');
+				//sb.Append(sb2);
+                sw.Write(sb.ToString());
+				sb.Length = 0;
+                sw.Write("\r\n        }\r\n");
 
                 //GC should clean that
                 uvs = null;
 
 //############## MATERIAL DISTRIBUTION PART
                 EditorUtility.DisplayProgressBar("Exporting FBX", "Writing materials for lightmap " + (model +1), 0.8f);
-                sb.Append("        LayerElementMaterial: 0 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"\"\r\n");
-                sb.Append("            MappingInformationType: \"ByPolygon\"\r\n");
-                sb.Append("            ReferenceInformationType: \"IndexToDirect\"\r\n");
-                sb.Append("            Materials: ");
+                sw.Write("        LayerElementMaterial: 0 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"\"\r\n");
+                sw.Write("            MappingInformationType: \"ByPolygon\"\r\n");
+                sw.Write("            ReferenceInformationType: \"IndexToDirect\"\r\n");
+                sw.Write("            Materials: ");
 
                 int countner = 0;
                 int value = 0;
@@ -358,27 +382,27 @@ class SaveFBX
                         {
                             //if (i % 3 == 2)
                             //{
-                                sb.Append(str);
+                                sw.Write(str);
 
-                                if ((i & 15) == 0) sb.Append("\r\n            ");
+                                if ((i & 15) == 0) sw.Write("\r\n            ");
                             //}
                         }
                     }
                 }
 
 
-                sb.Append("\r\n        }\r\n");
+                sw.Write("\r\n        }\r\n");
 
 // ############# Texture part
 
-                sb.Append("        LayerElementTexture: 0 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"\"\r\n");
-                sb.Append("            MappingInformationType: \"ByPolygon\"\r\n");
-                sb.Append("            ReferenceInformationType: \"IndexToDirect\"\r\n");
-                sb.Append("            BlendMode: \"Translucent\"\r\n");
-                sb.Append("            TextureAlpha: 1\r\n");
-                sb.Append("            TextureId: ");
+                sw.Write("        LayerElementTexture: 0 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"\"\r\n");
+                sw.Write("            MappingInformationType: \"ByPolygon\"\r\n");
+                sw.Write("            ReferenceInformationType: \"IndexToDirect\"\r\n");
+                sw.Write("            BlendMode: \"Translucent\"\r\n");
+                sw.Write("            TextureAlpha: 1\r\n");
+                sw.Write("            TextureId: ");
 
                 int mapOffset = 0;
                 countner = 0;
@@ -419,13 +443,13 @@ class SaveFBX
                         {
                             //if (i % 3 == 2)
                             //{
-                                sb.Append(str);
+                                sw.Write(str);
                             //}
                         }
-                        sb.Append("\r\n            ");
+                        sw.Write("\r\n            ");
                     }
                 }
-                sb.Append("\r\n        }\r\n");
+                sw.Write("\r\n        }\r\n");
 
 
                 countner = 0;
@@ -433,14 +457,14 @@ class SaveFBX
                 nonMap = new ArrayList();
                 inserted = new ArrayList();
 
-                sb.Append("        LayerElementBumpTextures: 0 {\r\n");
-                sb.Append("            Version: 101\r\n");
-                sb.Append("            Name: \"\"\r\n");
-                sb.Append("            MappingInformationType: \"ByPolygon\"\r\n");
-                sb.Append("            ReferenceInformationType: \"IndexToDirect\"\r\n");
-                sb.Append("            BlendMode: \"Translucent\"\r\n");
-                sb.Append("            TextureAlpha: 1\r\n");
-                sb.Append("            TextureId: ");
+                sw.Write("        LayerElementBumpTextures: 0 {\r\n");
+                sw.Write("            Version: 101\r\n");
+                sw.Write("            Name: \"\"\r\n");
+                sw.Write("            MappingInformationType: \"ByPolygon\"\r\n");
+                sw.Write("            ReferenceInformationType: \"IndexToDirect\"\r\n");
+                sw.Write("            BlendMode: \"Translucent\"\r\n");
+                sw.Write("            TextureAlpha: 1\r\n");
+                sw.Write("            TextureId: ");
 
                 for (int z = 0; z < mf.Length; z++)
                 {
@@ -470,63 +494,63 @@ class SaveFBX
                         {
                             if (i % 3 == 2)
                             {
-                                sb.Append(value + ",");
+                                sw.Write(value + ",");
 
                                 if (i % 20 == 0)
                                 {
-                                    //sb.Append("\r\n            ");
+                                    //sw.Write("\r\n            ");
                                 }
                             }
                         }
-                        sb.Append("\r\n            ");
+                        sw.Write("\r\n            ");
                     }
                 }
 
-                sb.Append("\r\n        }\r\n");
+                sw.Write("\r\n        }\r\n");
 
                 //GC should clean this:
                 nonMap = null;
                 inserted = null;
 
-                sb.Append("        Layer: 0 {\r\n");
-                sb.Append("            Version: 100\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementNormal\"\r\n");
-                sb.Append("                TypedIndex: 0\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementMaterial\"\r\n");
-                sb.Append("                TypedIndex: 0\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementTexture\"\r\n");
-                sb.Append("                TypedIndex: 0\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementBumpTextures\"\r\n");
-                sb.Append("                TypedIndex: 0\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementUV\"\r\n");
-                sb.Append("                TypedIndex: 0\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("        }\r\n");
-                sb.Append("        Layer: 1 {\r\n");
-                sb.Append("            Version: 100\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementUV\"\r\n");
-                sb.Append("                TypedIndex: 1\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("        }\r\n");
-                sb.Append("        Layer: 2 {\r\n");
-                sb.Append("            Version: 100\r\n");
-                sb.Append("            LayerElement:  {\r\n");
-                sb.Append("                Type: \"LayerElementUV\"\r\n");
-                sb.Append("                TypedIndex: 2\r\n");
-                sb.Append("            }\r\n");
-                sb.Append("        }\r\n");
-                sb.Append("        NodeAttributeName: \"Geometry::ImportedObject" + Convert.ToString(model+1) + "\"\r\n");
-                sb.Append("    }\r\n");
+                sw.Write("        Layer: 0 {\r\n");
+                sw.Write("            Version: 100\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementNormal\"\r\n");
+                sw.Write("                TypedIndex: 0\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementMaterial\"\r\n");
+                sw.Write("                TypedIndex: 0\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementTexture\"\r\n");
+                sw.Write("                TypedIndex: 0\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementBumpTextures\"\r\n");
+                sw.Write("                TypedIndex: 0\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementUV\"\r\n");
+                sw.Write("                TypedIndex: 0\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("        }\r\n");
+                sw.Write("        Layer: 1 {\r\n");
+                sw.Write("            Version: 100\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementUV\"\r\n");
+                sw.Write("                TypedIndex: 1\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("        }\r\n");
+                sw.Write("        Layer: 2 {\r\n");
+                sw.Write("            Version: 100\r\n");
+                sw.Write("            LayerElement:  {\r\n");
+                sw.Write("                Type: \"LayerElementUV\"\r\n");
+                sw.Write("                TypedIndex: 2\r\n");
+                sw.Write("            }\r\n");
+                sw.Write("        }\r\n");
+                sw.Write("        NodeAttributeName: \"Geometry::ImportedObject" + Convert.ToString(model+1) + "\"\r\n");
+                sw.Write("    }\r\n");
                 model++;
             }
 
@@ -550,122 +574,122 @@ class SaveFBX
                         break;
                 }
 
-                sb.Append("Model: \"Model::ImportedLight" + (i+1) + "\", \"Light\" {\r\n");
-                sb.Append("        Version: 232\r\n");
-                sb.Append("        Properties60:  {\r\n");
-                sb.Append("            Property: \"PreRotation\", \"Vector3D\", \"\",-90,0,0\r\n");
-                sb.Append("            Property: \"PostRotation\", \"Vector3D\", \"\",0,0," + Convert.ToString(-lights[i].transform.eulerAngles.z).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"RotationActive\", \"bool\", \"\",1\r\n");
-                sb.Append("            Property: \"Lcl Translation\", \"Lcl Translation\", \"A+\"," + Convert.ToString(-lights[i].transform.position.x).Replace(",", ".") + "," + Convert.ToString(lights[i].transform.position.y).Replace(",", ".") + "," + Convert.ToString(lights[i].transform.position.z).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"Lcl Rotation\", \"Lcl Rotation\", \"A+\"," + Convert.ToString(lights[i].transform.eulerAngles.x).Replace(",", ".") + ",0," + Convert.ToString(-lights[i].transform.eulerAngles.y).Replace(",", ".") + " \r\n");
-                sb.Append("            Property: \"Lcl Scaling\", \"Lcl Scaling\", \"A+\",1,1,1\r\n");
-                sb.Append("            Property: \"Visibility\", \"Visibility\", \"A+\",1\r\n");
-                sb.Append("            Property: \"Color\", \"Color\", \"A+N\"," + Convert.ToString(lights[i].color.r).Replace(",", ".") + "," + Convert.ToString(lights[i].color.g).Replace(",", ".") + "," + Convert.ToString(lights[i].color.b).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"LightType\", \"enum\", \"N\"," + Convert.ToString(enumType) + "\r\n");
-                sb.Append("            Property: \"CastLightOnObject\", \"bool\", \"N\",1\r\n");
-                sb.Append("            Property: \"DrawVolumetricLight\", \"bool\", \"N\",1\r\n");
-                sb.Append("            Property: \"DrawGroundProjection\", \"bool\", \"N\",0\r\n");
-                sb.Append("            Property: \"DrawFrontFacingVolumetricLight\", \"bool\", \"N\",0\r\n");
-                sb.Append("            Property: \"Intensity\", \"Number\", \"A+N\"," + Convert.ToString(lights[i].intensity * LightmappingTool.lightMultipler*100).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"HotSpot\", \"Number\", \"A+N\"," + ((enumType != 0) ? lights[i].spotAngle: 0) + "\r\n");
-                sb.Append("            Property: \"Cone angle\", \"Number\", \"A+N\"," + Convert.ToString(lights[i].spotAngle).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"Fog\", \"Number\", \"A+N\",0\r\n");
-                sb.Append("            Property: \"DecayType\", \"enum\", \"N\"," + (lights[i].attenuate ? 1 : 0) + "\r\n");
-                sb.Append("            Property: \"DecayStart\", \"Number\", \"A+N\",40\r\n");
-                sb.Append("            Property: \"FileName\", \"KString\", \"N\", \"\"\r\n");
-                sb.Append("            Property: \"EnableNearAttenuation\", \"bool\", \"N\",0\r\n");
-                sb.Append("            Property: \"NearAttenuationStart\", \"Number\", \"A+N\",0\r\n");
-                sb.Append("            Property: \"NearAttenuationEnd\", \"Number\", \"A+N\",40\r\n");
-                sb.Append("            Property: \"EnableFarAttenuation\", \"bool\", \"N\",0\r\n");
-                sb.Append("            Property: \"FarAttenuationStart\", \"Number\", \"A+N\",80\r\n");
-                sb.Append("            Property: \"FarAttenuationEnd\", \"Number\", \"A+N\",200\r\n");
-                sb.Append("            Property: \"CastShadows\", \"bool\", \"N\",1\r\n");
-                sb.Append("            Property: \"ShadowColor\", \"Color\", \"A+N\",0,0,0\r\n");
-                sb.Append("            Property: \"3dsMax\", \"Compound\", \"N\"\r\n");
-                sb.Append("            Property: \"3dsMax|ClassIDa\", \"int\", \"N\",4113\r\n");
-                sb.Append("            Property: \"3dsMax|ClassIDb\", \"int\", \"N\",0\r\n");
-                sb.Append("            Property: \"3dsMax|SuperClassID\", \"int\", \"N\",48\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0\", \"Compound\", \"N\"\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Color\", \"Color\", \"AN\",1,1,1\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Multiplier\", \"Float\", \"AN\", " + Convert.ToString(lights[i].intensity * LightmappingTool.lightMultipler*100).Replace(",", ".") + " \r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Contrast\", \"Float\", \"AN\",0\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Diffuse Soften\", \"Float\", \"AN\",0\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Attenuation Near Start\", \"Float\", \"AN\",0\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Attenuation Near End\", \"Float\", \"AN\",40\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Attenuation Far Start\", \"Float\", \"AN\",80\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Attenuation Far End\", \"Float\", \"AN\",200\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Decay Falloff\", \"Float\", \"AN\",40\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Shadow Color\", \"Color\", \"AN\",0,0,0\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|_Unnamed_Parameter_10\", \"int\", \"N\",0\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Atmosphere Opacity\", \"Float\", \"AN\",1\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Atmosphere Color Amount\", \"Float\", \"AN\",1\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|Shadow Density\", \"Float\", \"AN\",1\r\n");
-                sb.Append("            Property: \"3dsMax|ParamBlock_0|_Unnamed_Parameter_14\", \"int\", \"N\",0\r\n");
-                sb.Append("        }\r\n");
-                sb.Append("        MultiLayer: 0\r\n");
-                sb.Append("        MultiTake: 0\r\n");
-                sb.Append("        Shading: T\r\n");
-                sb.Append("        Culling: \"CullingOff\"\r\n");
-                sb.Append("        TypeFlags: \"Light\"\r\n");
-                sb.Append("        GeometryVersion: 124\r\n");
-                sb.Append("        NodeAttributeName: \"NodeAttribute::ImportedLight" + (i+1) + "\"\r\n");
-                sb.Append("    }\r\n");
+                sw.Write("Model: \"Model::ImportedLight" + (i+1) + "\", \"Light\" {\r\n");
+                sw.Write("        Version: 232\r\n");
+                sw.Write("        Properties60:  {\r\n");
+                sw.Write("            Property: \"PreRotation\", \"Vector3D\", \"\",-90,0,0\r\n");
+                sw.Write("            Property: \"PostRotation\", \"Vector3D\", \"\",0,0," + Convert.ToString(-lights[i].transform.eulerAngles.z).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"RotationActive\", \"bool\", \"\",1\r\n");
+                sw.Write("            Property: \"Lcl Translation\", \"Lcl Translation\", \"A+\"," + Convert.ToString(-lights[i].transform.position.x).Replace(",", ".") + "," + Convert.ToString(lights[i].transform.position.y).Replace(",", ".") + "," + Convert.ToString(lights[i].transform.position.z).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"Lcl Rotation\", \"Lcl Rotation\", \"A+\"," + Convert.ToString(lights[i].transform.eulerAngles.x).Replace(",", ".") + ",0," + Convert.ToString(-lights[i].transform.eulerAngles.y).Replace(",", ".") + " \r\n");
+                sw.Write("            Property: \"Lcl Scaling\", \"Lcl Scaling\", \"A+\",1,1,1\r\n");
+                sw.Write("            Property: \"Visibility\", \"Visibility\", \"A+\",1\r\n");
+                sw.Write("            Property: \"Color\", \"Color\", \"A+N\"," + Convert.ToString(lights[i].color.r).Replace(",", ".") + "," + Convert.ToString(lights[i].color.g).Replace(",", ".") + "," + Convert.ToString(lights[i].color.b).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"LightType\", \"enum\", \"N\"," + Convert.ToString(enumType) + "\r\n");
+                sw.Write("            Property: \"CastLightOnObject\", \"bool\", \"N\",1\r\n");
+                sw.Write("            Property: \"DrawVolumetricLight\", \"bool\", \"N\",1\r\n");
+                sw.Write("            Property: \"DrawGroundProjection\", \"bool\", \"N\",0\r\n");
+                sw.Write("            Property: \"DrawFrontFacingVolumetricLight\", \"bool\", \"N\",0\r\n");
+                sw.Write("            Property: \"Intensity\", \"Number\", \"A+N\"," + Convert.ToString(lights[i].intensity * LightmappingTool.lightMultipler*100).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"HotSpot\", \"Number\", \"A+N\"," + ((enumType != 0) ? lights[i].spotAngle: 0) + "\r\n");
+                sw.Write("            Property: \"Cone angle\", \"Number\", \"A+N\"," + Convert.ToString(lights[i].spotAngle).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"Fog\", \"Number\", \"A+N\",0\r\n");
+                sw.Write("            Property: \"DecayType\", \"enum\", \"N\"," + (lights[i].attenuate ? 1 : 0) + "\r\n");
+                sw.Write("            Property: \"DecayStart\", \"Number\", \"A+N\",40\r\n");
+                sw.Write("            Property: \"FileName\", \"KString\", \"N\", \"\"\r\n");
+                sw.Write("            Property: \"EnableNearAttenuation\", \"bool\", \"N\",0\r\n");
+                sw.Write("            Property: \"NearAttenuationStart\", \"Number\", \"A+N\",0\r\n");
+                sw.Write("            Property: \"NearAttenuationEnd\", \"Number\", \"A+N\",40\r\n");
+                sw.Write("            Property: \"EnableFarAttenuation\", \"bool\", \"N\",0\r\n");
+                sw.Write("            Property: \"FarAttenuationStart\", \"Number\", \"A+N\",80\r\n");
+                sw.Write("            Property: \"FarAttenuationEnd\", \"Number\", \"A+N\",200\r\n");
+                sw.Write("            Property: \"CastShadows\", \"bool\", \"N\",1\r\n");
+                sw.Write("            Property: \"ShadowColor\", \"Color\", \"A+N\",0,0,0\r\n");
+                sw.Write("            Property: \"3dsMax\", \"Compound\", \"N\"\r\n");
+                sw.Write("            Property: \"3dsMax|ClassIDa\", \"int\", \"N\",4113\r\n");
+                sw.Write("            Property: \"3dsMax|ClassIDb\", \"int\", \"N\",0\r\n");
+                sw.Write("            Property: \"3dsMax|SuperClassID\", \"int\", \"N\",48\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0\", \"Compound\", \"N\"\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Color\", \"Color\", \"AN\",1,1,1\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Multiplier\", \"Float\", \"AN\", " + Convert.ToString(lights[i].intensity * LightmappingTool.lightMultipler*100).Replace(",", ".") + " \r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Contrast\", \"Float\", \"AN\",0\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Diffuse Soften\", \"Float\", \"AN\",0\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Attenuation Near Start\", \"Float\", \"AN\",0\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Attenuation Near End\", \"Float\", \"AN\",40\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Attenuation Far Start\", \"Float\", \"AN\",80\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Attenuation Far End\", \"Float\", \"AN\",200\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Decay Falloff\", \"Float\", \"AN\",40\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Shadow Color\", \"Color\", \"AN\",0,0,0\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|_Unnamed_Parameter_10\", \"int\", \"N\",0\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Atmosphere Opacity\", \"Float\", \"AN\",1\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Atmosphere Color Amount\", \"Float\", \"AN\",1\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|Shadow Density\", \"Float\", \"AN\",1\r\n");
+                sw.Write("            Property: \"3dsMax|ParamBlock_0|_Unnamed_Parameter_14\", \"int\", \"N\",0\r\n");
+                sw.Write("        }\r\n");
+                sw.Write("        MultiLayer: 0\r\n");
+                sw.Write("        MultiTake: 0\r\n");
+                sw.Write("        Shading: T\r\n");
+                sw.Write("        Culling: \"CullingOff\"\r\n");
+                sw.Write("        TypeFlags: \"Light\"\r\n");
+                sw.Write("        GeometryVersion: 124\r\n");
+                sw.Write("        NodeAttributeName: \"NodeAttribute::ImportedLight" + (i+1) + "\"\r\n");
+                sw.Write("    }\r\n");
             }
 
 
             int tex = 0;
             foreach (Material mat in totalUniqueMaterials)
             {
-                sb.Append("    Material: \"Material::" + @mat.name + "\", \"\" {\r\n");
-                sb.Append("        Version: 102\r\n");
-                sb.Append("        ShadingModel: \"phong\"\r\n");
-                sb.Append("        MultiLayer: 0\r\n");
-                sb.Append("        Properties60:  {\r\n");
-                sb.Append("            Property: \"ShadingModel\", \"KString\", \"\", \"phong\"\r\n");
-                sb.Append("            Property: \"MultiLayer\", \"bool\", \"\",0\r\n");
+                sw.Write("    Material: \"Material::" + @mat.name + "\", \"\" {\r\n");
+                sw.Write("        Version: 102\r\n");
+                sw.Write("        ShadingModel: \"phong\"\r\n");
+                sw.Write("        MultiLayer: 0\r\n");
+                sw.Write("        Properties60:  {\r\n");
+                sw.Write("            Property: \"ShadingModel\", \"KString\", \"\", \"phong\"\r\n");
+                sw.Write("            Property: \"MultiLayer\", \"bool\", \"\",0\r\n");
                 if (mat.HasProperty("_Emission"))
                 {
-                    sb.Append("            Property: \"EmissiveColor\", \"ColorRGB\"," + Convert.ToString(mat.GetColor("_Emission").r).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_Emission").g).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_Emission").b).Replace(",", ".") + "\r\n");
-                    sb.Append("            Property: \"EmissiveFactor\", \"double\", \"\"," + Convert.ToString(mat.GetFloat("_Shininess")).Replace(",", ".") + "\r\n");
+                    sw.Write("            Property: \"EmissiveColor\", \"ColorRGB\"," + Convert.ToString(mat.GetColor("_Emission").r).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_Emission").g).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_Emission").b).Replace(",", ".") + "\r\n");
+                    sw.Write("            Property: \"EmissiveFactor\", \"double\", \"\"," + Convert.ToString(mat.GetFloat("_Shininess")).Replace(",", ".") + "\r\n");
                 }
                 else
                 {
-                    sb.Append("            Property: \"EmissiveColor\", \"ColorRGB\", \"\",0,0,0\r\n");
-                    sb.Append("            Property: \"EmissiveFactor\", \"double\", \"\",0\r\n");
+                    sw.Write("            Property: \"EmissiveColor\", \"ColorRGB\", \"\",0,0,0\r\n");
+                    sw.Write("            Property: \"EmissiveFactor\", \"double\", \"\",0\r\n");
                 }
-                sb.Append("            Property: \"AmbientColor\", \"ColorRGB\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"AmbientFactor\", \"double\", \"\",1\r\n");
-                sb.Append("            Property: \"DiffuseColor\", \"ColorRGB\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"DiffuseFactor\", \"double\", \"\",1\r\n");
-                sb.Append("            Property: \"Bump\", \"Vector3D\", \"\",0,0,0\r\n");
-                sb.Append("            Property: \"NormalMap\", \"Vector3D\", \"\",0,0,0\r\n");
-                sb.Append("            Property: \"BumpFactor\", \"double\", \"\",1\r\n");
-                sb.Append("            Property: \"TransparentColor\", \"ColorRGB\", \"\",1,1,1\r\n");
-                sb.Append("            Property: \"TransparencyFactor\", \"double\", \"\",0\r\n");
-                sb.Append("            Property: \"DisplacementColor\", \"ColorRGB\", \"\",0,0,0\r\n");
-                sb.Append("            Property: \"DisplacementFactor\", \"double\", \"\",1\r\n");
+                sw.Write("            Property: \"AmbientColor\", \"ColorRGB\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"AmbientFactor\", \"double\", \"\",1\r\n");
+                sw.Write("            Property: \"DiffuseColor\", \"ColorRGB\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"DiffuseFactor\", \"double\", \"\",1\r\n");
+                sw.Write("            Property: \"Bump\", \"Vector3D\", \"\",0,0,0\r\n");
+                sw.Write("            Property: \"NormalMap\", \"Vector3D\", \"\",0,0,0\r\n");
+                sw.Write("            Property: \"BumpFactor\", \"double\", \"\",1\r\n");
+                sw.Write("            Property: \"TransparentColor\", \"ColorRGB\", \"\",1,1,1\r\n");
+                sw.Write("            Property: \"TransparencyFactor\", \"double\", \"\",0\r\n");
+                sw.Write("            Property: \"DisplacementColor\", \"ColorRGB\", \"\",0,0,0\r\n");
+                sw.Write("            Property: \"DisplacementFactor\", \"double\", \"\",1\r\n");
                 if (mat.HasProperty("_SpecColor"))
                 {
-                    sb.Append("            Property: \"SpecularColor\", \"ColorRGB\", \"\"," + Convert.ToString(mat.GetColor("_SpecColor").r).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_SpecColor").g).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_SpecColor").b).Replace(",", ".") + "\r\n");
-                    sb.Append("            Property: \"SpecularFactor\", \"double\", \"\"," + Convert.ToString(mat.GetFloat("_Shininess")).Replace(",", ".") + "\r\n");
+                    sw.Write("            Property: \"SpecularColor\", \"ColorRGB\", \"\"," + Convert.ToString(mat.GetColor("_SpecColor").r).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_SpecColor").g).Replace(",", ".") + "," + Convert.ToString(mat.GetColor("_SpecColor").b).Replace(",", ".") + "\r\n");
+                    sw.Write("            Property: \"SpecularFactor\", \"double\", \"\"," + Convert.ToString(mat.GetFloat("_Shininess")).Replace(",", ".") + "\r\n");
                 }
                 else
                 {
-                    sb.Append("            Property: \"SpecularColor\", \"ColorRGB\", \"\",0.0,0.0,0.0\r\n");
-                    sb.Append("            Property: \"SpecularFactor\", \"double\", \"\",0\r\n");
+                    sw.Write("            Property: \"SpecularColor\", \"ColorRGB\", \"\",0.0,0.0,0.0\r\n");
+                    sw.Write("            Property: \"SpecularFactor\", \"double\", \"\",0\r\n");
                 }
-                sb.Append("            Property: \"ShininessExponent\", \"double\", \"\",2.0000000206574\r\n");
-                sb.Append("            Property: \"ReflectionColor\", \"ColorRGB\", \"\",0,0,0\r\n");
-                sb.Append("            Property: \"ReflectionFactor\", \"double\", \"\",1\r\n");
-                sb.Append("            Property: \"Emissive\", \"Vector3D\", \"\",0,0,0\r\n");
-                sb.Append("            Property: \"Ambient\", \"Vector3D\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"Diffuse\", \"Vector3D\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
-                sb.Append("            Property: \"Specular\", \"Vector3D\", \"\",0,0,0\r\n");
-                sb.Append("            Property: \"Shininess\", \"double\", \"\",2.0000000206574\r\n");
-                sb.Append("            Property: \"Opacity\", \"double\", \"\",1\r\n");
-                sb.Append("            Property: \"Reflectivity\", \"double\", \"\",0\r\n");
-                sb.Append("        }\r\n");
-                sb.Append("    }\r\n");
+                sw.Write("            Property: \"ShininessExponent\", \"double\", \"\",2.0000000206574\r\n");
+                sw.Write("            Property: \"ReflectionColor\", \"ColorRGB\", \"\",0,0,0\r\n");
+                sw.Write("            Property: \"ReflectionFactor\", \"double\", \"\",1\r\n");
+                sw.Write("            Property: \"Emissive\", \"Vector3D\", \"\",0,0,0\r\n");
+                sw.Write("            Property: \"Ambient\", \"Vector3D\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"Diffuse\", \"Vector3D\", \"\"," + Convert.ToString(mat.color.r).Replace(",", ".") + "," + Convert.ToString(mat.color.g).Replace(",", ".") + "," + Convert.ToString(mat.color.b).Replace(",", ".") + "\r\n");
+                sw.Write("            Property: \"Specular\", \"Vector3D\", \"\",0,0,0\r\n");
+                sw.Write("            Property: \"Shininess\", \"double\", \"\",2.0000000206574\r\n");
+                sw.Write("            Property: \"Opacity\", \"double\", \"\",1\r\n");
+                sw.Write("            Property: \"Reflectivity\", \"double\", \"\",0\r\n");
+                sw.Write("        }\r\n");
+                sw.Write("    }\r\n");
                 tex++;
             }
 
@@ -679,110 +703,110 @@ class SaveFBX
                 Texture tex0;
                 if (mat.HasProperty("_MainTex") && (tex0 = mat.GetTexture("_MainTex")))
                 {
-                    sb.Append("    Texture: \"Texture::" + @mat.name + "_diff" + "\", \"\" {\r\n");
-                    sb.Append("        Type: \"TextureVideoClip\"\r\n");
-                    sb.Append("        Version: 202\r\n");
-                    sb.Append("        TextureName: \"Texture::" + @mat.name + "_diff" + "\"\r\n");
-                    sb.Append("        Properties60:  {\r\n");
-                    sb.Append("            Property: \"TextureTypeUse\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"Texture alpha\", \"Number\", \"A+\",1\r\n");
-                    sb.Append("            Property: \"CurrentMappingType\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"WrapModeU\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"WrapModeV\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"UVSwap\", \"bool\", \"\",0\r\n");
-                    sb.Append("            Property: \"Translation\", \"Vector\", \"A+\"," + Convert.ToString(mat.mainTextureOffset.x).Replace(",",".") + "," + Convert.ToString(mat.mainTextureOffset.y).Replace(",",".") + ",0\r\n");
-                    sb.Append("            Property: \"Rotation\", \"Vector\", \"A+\",0,0,0\r\n");
-                    sb.Append("            Property: \"Scaling\", \"Vector\", \"A+\"," + Convert.ToString(mat.mainTextureScale.x).Replace(",", ".") + "," + Convert.ToString(mat.mainTextureScale.y).Replace(",", ".") + ",1\r\n");
-                    sb.Append("            Property: \"TextureRotationPivot\", \"Vector3D\", \"\",0,0,0\r\n");
-                    sb.Append("            Property: \"TextureScalingPivot\", \"Vector3D\", \"\",0,0,0\r\n");
-                    sb.Append("            Property: \"UseMaterial\", \"bool\", \"\",1\r\n");
-                    sb.Append("            Property: \"UseMipMap\", \"bool\", \"\",0\r\n");
-                    sb.Append("            Property: \"CurrentTextureBlendMode\", \"enum\", \"\",1\r\n");
-                    sb.Append("            Property: \"UVSet\", \"KString\", \"\", \"UVChannel_1\"\r\n");
-                    sb.Append("        }\r\n");
-                    //sb.Append("        Media: \"Video::" +@ta2[0] +"_diff"+ "\"\r\n");
-                    sb.Append("        FileName: \"" + (ProPath + AssetDatabase.GetAssetPath(tex0)) + "\"\r\n");
-                    //sb.Append("        RelativeFilename: \"" +  @(ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
-                    sb.Append("        ModelUVTranslation: 0,0\r\n");
-                    sb.Append("        ModelUVScaling: 1,1\r\n");
-                    sb.Append("        Texture_Alpha_Source: \"None\"\r\n");
-                    sb.Append("        Cropping: 0,0,0,0\r\n");
-                    sb.Append("    }\r\n");
+                    sw.Write("    Texture: \"Texture::" + @mat.name + "_diff" + "\", \"\" {\r\n");
+                    sw.Write("        Type: \"TextureVideoClip\"\r\n");
+                    sw.Write("        Version: 202\r\n");
+                    sw.Write("        TextureName: \"Texture::" + @mat.name + "_diff" + "\"\r\n");
+                    sw.Write("        Properties60:  {\r\n");
+                    sw.Write("            Property: \"TextureTypeUse\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"Texture alpha\", \"Number\", \"A+\",1\r\n");
+                    sw.Write("            Property: \"CurrentMappingType\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"WrapModeU\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"WrapModeV\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"UVSwap\", \"bool\", \"\",0\r\n");
+                    sw.Write("            Property: \"Translation\", \"Vector\", \"A+\"," + Convert.ToString(mat.mainTextureOffset.x).Replace(",",".") + "," + Convert.ToString(mat.mainTextureOffset.y).Replace(",",".") + ",0\r\n");
+                    sw.Write("            Property: \"Rotation\", \"Vector\", \"A+\",0,0,0\r\n");
+                    sw.Write("            Property: \"Scaling\", \"Vector\", \"A+\"," + Convert.ToString(mat.mainTextureScale.x).Replace(",", ".") + "," + Convert.ToString(mat.mainTextureScale.y).Replace(",", ".") + ",1\r\n");
+                    sw.Write("            Property: \"TextureRotationPivot\", \"Vector3D\", \"\",0,0,0\r\n");
+                    sw.Write("            Property: \"TextureScalingPivot\", \"Vector3D\", \"\",0,0,0\r\n");
+                    sw.Write("            Property: \"UseMaterial\", \"bool\", \"\",1\r\n");
+                    sw.Write("            Property: \"UseMipMap\", \"bool\", \"\",0\r\n");
+                    sw.Write("            Property: \"CurrentTextureBlendMode\", \"enum\", \"\",1\r\n");
+                    sw.Write("            Property: \"UVSet\", \"KString\", \"\", \"UVChannel_1\"\r\n");
+                    sw.Write("        }\r\n");
+                    //sw.Write("        Media: \"Video::" +@ta2[0] +"_diff"+ "\"\r\n");
+                    sw.Write("        FileName: \"" + (ProPath + AssetDatabase.GetAssetPath(tex0)) + "\"\r\n");
+                    //sw.Write("        RelativeFilename: \"" +  @(ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
+                    sw.Write("        ModelUVTranslation: 0,0\r\n");
+                    sw.Write("        ModelUVScaling: 1,1\r\n");
+                    sw.Write("        Texture_Alpha_Source: \"None\"\r\n");
+                    sw.Write("        Cropping: 0,0,0,0\r\n");
+                    sw.Write("    }\r\n");
                 }
                 if (mat.HasProperty("_BumpMap") && (tex0 = mat.GetTexture("_BumpMap")))
                 {
-                    sb.Append("    Texture: \"Texture::" + @mat.name + "_bump" + "\", \"\" {\r\n");
-                    sb.Append("        Type: \"TextureVideoClip\"\r\n");
-                    sb.Append("        Version: 202\r\n");
-                    sb.Append("        TextureName: \"Texture::" + @mat.name + "_bump" + "\"\r\n");
-                    sb.Append("        Properties60:  {\r\n");
-                    sb.Append("            Property: \"TextureTypeUse\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"Texture alpha\", \"Number\", \"A+\",1\r\n");
-                    sb.Append("            Property: \"CurrentMappingType\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"WrapModeU\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"WrapModeV\", \"enum\", \"\",0\r\n");
-                    sb.Append("            Property: \"UVSwap\", \"bool\", \"\",0\r\n");
-                    sb.Append("            Property: \"Translation\", \"Vector\", \"A+\"," + Convert.ToString(mat.GetTextureOffset("_BumpMap").x).Replace(",", ".") + "," + Convert.ToString(mat.GetTextureOffset("_BumpMap").y).Replace(",", ".") + ",0\r\n");
-                    sb.Append("            Property: \"Rotation\", \"Vector\", \"A+\",0,0,0\r\n");
-                    sb.Append("            Property: \"Scaling\", \"Vector\", \"A+\"," + Convert.ToString(mat.GetTextureScale("_BumpMap").x).Replace(",", ".") + "," + Convert.ToString(mat.GetTextureScale("_BumpMap").y).Replace(",", ".") + ",1\r\n");
-                    sb.Append("            Property: \"TextureRotationPivot\", \"Vector3D\", \"\",0,0,0\r\n");
-                    sb.Append("            Property: \"TextureScalingPivot\", \"Vector3D\", \"\",0,0,0\r\n");
-                    sb.Append("            Property: \"UseMaterial\", \"bool\", \"\",1\r\n");
-                    sb.Append("            Property: \"UseMipMap\", \"bool\", \"\",0\r\n");
-                    sb.Append("            Property: \"CurrentTextureBlendMode\", \"enum\", \"\",1\r\n");
-                    sb.Append("            Property: \"UVSet\", \"KString\", \"\", \"UVChannel_1\"\r\n");
-                    sb.Append("        }\r\n");
-                    //sb.Append("        Media: \"Video::" +@ta2[0]+"_bump" + "\"\r\n");
-                    sb.Append("        FileName: \"" + (ProPath + AssetDatabase.GetAssetPath(tex0)) + "\"\r\n");
-                    //sb.Append("        RelativeFilename: \"" +  (ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
-                    sb.Append("        ModelUVTranslation: 0,0\r\n");
-                    sb.Append("        ModelUVScaling: 1,1\r\n");
-                    sb.Append("        Texture_Alpha_Source: \"None\"\r\n");
-                    sb.Append("        Cropping: 0,0,0,0\r\n");
-                    sb.Append("    }\r\n");
+                    sw.Write("    Texture: \"Texture::" + @mat.name + "_bump" + "\", \"\" {\r\n");
+                    sw.Write("        Type: \"TextureVideoClip\"\r\n");
+                    sw.Write("        Version: 202\r\n");
+                    sw.Write("        TextureName: \"Texture::" + @mat.name + "_bump" + "\"\r\n");
+                    sw.Write("        Properties60:  {\r\n");
+                    sw.Write("            Property: \"TextureTypeUse\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"Texture alpha\", \"Number\", \"A+\",1\r\n");
+                    sw.Write("            Property: \"CurrentMappingType\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"WrapModeU\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"WrapModeV\", \"enum\", \"\",0\r\n");
+                    sw.Write("            Property: \"UVSwap\", \"bool\", \"\",0\r\n");
+                    sw.Write("            Property: \"Translation\", \"Vector\", \"A+\"," + Convert.ToString(mat.GetTextureOffset("_BumpMap").x).Replace(",", ".") + "," + Convert.ToString(mat.GetTextureOffset("_BumpMap").y).Replace(",", ".") + ",0\r\n");
+                    sw.Write("            Property: \"Rotation\", \"Vector\", \"A+\",0,0,0\r\n");
+                    sw.Write("            Property: \"Scaling\", \"Vector\", \"A+\"," + Convert.ToString(mat.GetTextureScale("_BumpMap").x).Replace(",", ".") + "," + Convert.ToString(mat.GetTextureScale("_BumpMap").y).Replace(",", ".") + ",1\r\n");
+                    sw.Write("            Property: \"TextureRotationPivot\", \"Vector3D\", \"\",0,0,0\r\n");
+                    sw.Write("            Property: \"TextureScalingPivot\", \"Vector3D\", \"\",0,0,0\r\n");
+                    sw.Write("            Property: \"UseMaterial\", \"bool\", \"\",1\r\n");
+                    sw.Write("            Property: \"UseMipMap\", \"bool\", \"\",0\r\n");
+                    sw.Write("            Property: \"CurrentTextureBlendMode\", \"enum\", \"\",1\r\n");
+                    sw.Write("            Property: \"UVSet\", \"KString\", \"\", \"UVChannel_1\"\r\n");
+                    sw.Write("        }\r\n");
+                    //sw.Write("        Media: \"Video::" +@ta2[0]+"_bump" + "\"\r\n");
+                    sw.Write("        FileName: \"" + (ProPath + AssetDatabase.GetAssetPath(tex0)) + "\"\r\n");
+                    //sw.Write("        RelativeFilename: \"" +  (ProPath + EditorUtility.GetAssetPath(tex0)) + "\"\r\n");
+                    sw.Write("        ModelUVTranslation: 0,0\r\n");
+                    sw.Write("        ModelUVScaling: 1,1\r\n");
+                    sw.Write("        Texture_Alpha_Source: \"None\"\r\n");
+                    sw.Write("        Cropping: 0,0,0,0\r\n");
+                    sw.Write("    }\r\n");
                 }
             }
 
 // ######### Global Settings
 
-            sb.Append("    GlobalSettings:  {\r\n");
-            sb.Append("        Version: 1000\r\n");
-            sb.Append("        Properties60:  {\r\n");
-            sb.Append("            Property: \"UpAxis\", \"int\", \"\",1\r\n");
-            sb.Append("            Property: \"UpAxisSign\", \"int\", \"\",1\r\n");
-            sb.Append("            Property: \"FrontAxis\", \"int\", \"\",2\r\n");
-            sb.Append("            Property: \"FrontAxisSign\", \"int\", \"\",1\r\n");
-            sb.Append("            Property: \"CoordAxis\", \"int\", \"\",0\r\n");
-            sb.Append("            Property: \"CoordAxisSign\", \"int\", \"\",1\r\n");
-            sb.Append("            Property: \"OriginalUpAxis\", \"int\", \"\",2\r\n");
-            sb.Append("            Property: \"OriginalUpAxisSign\", \"int\", \"\",1\r\n");
-            sb.Append("            Property: \"UnitScaleFactor\", \"double\", \"\"," + LightmappingTool.exportScale +"\r\n");
-            sb.Append("        }\r\n");
-            sb.Append("    }\r\n");
+            sw.Write("    GlobalSettings:  {\r\n");
+            sw.Write("        Version: 1000\r\n");
+            sw.Write("        Properties60:  {\r\n");
+            sw.Write("            Property: \"UpAxis\", \"int\", \"\",1\r\n");
+            sw.Write("            Property: \"UpAxisSign\", \"int\", \"\",1\r\n");
+            sw.Write("            Property: \"FrontAxis\", \"int\", \"\",2\r\n");
+            sw.Write("            Property: \"FrontAxisSign\", \"int\", \"\",1\r\n");
+            sw.Write("            Property: \"CoordAxis\", \"int\", \"\",0\r\n");
+            sw.Write("            Property: \"CoordAxisSign\", \"int\", \"\",1\r\n");
+            sw.Write("            Property: \"OriginalUpAxis\", \"int\", \"\",2\r\n");
+            sw.Write("            Property: \"OriginalUpAxisSign\", \"int\", \"\",1\r\n");
+            sw.Write("            Property: \"UnitScaleFactor\", \"double\", \"\"," + LightmappingTool.exportScale +"\r\n");
+            sw.Write("        }\r\n");
+            sw.Write("    }\r\n");
 
 
             EditorUtility.DisplayProgressBar("Exporting FBX", "Writing connections...", 0.95f);
-            sb.Append("}\r\n");
-            sb.Append("\r\n\r\n");
-            sb.Append("; Object connections\r\n");
-            sb.Append(";------------------------------------------------------------------\r\n");
-            sb.Append("\r\n");
-            sb.Append("Connections:  {\r\n");
+            sw.Write("}\r\n");
+            sw.Write("\r\n\r\n");
+            sw.Write("; Object connections\r\n");
+            sw.Write(";------------------------------------------------------------------\r\n");
+            sw.Write("\r\n");
+            sw.Write("Connections:  {\r\n");
 
             for (int i = 0; i < lights.Length; i++)
             {
-                sb.Append("    Connect: \"OO\", \"Model::ImportedLight" + (i+1) + "\", \"Model::Scene\"\r\n");
+                sw.Write("    Connect: \"OO\", \"Model::ImportedLight" + (i+1) + "\", \"Model::Scene\"\r\n");
             }
             
             for (int obj = 0; obj < bigArray.Count; obj++)
             {
-                sb.Append("    Connect: \"OO\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\", \"Model::Scene\"\r\n");
+                sw.Write("    Connect: \"OO\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\", \"Model::Scene\"\r\n");
                 foreach (Material mat in ((ArrayList)uniqueMaterialsArray[obj]))
                 {
-                    sb.Append("    Connect: \"OO\", \"Material::" + @mat.name + "\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\"\r\n");
+                    sw.Write("    Connect: \"OO\", \"Material::" + @mat.name + "\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\"\r\n");
                     if (mat.HasProperty("_MainTex") && (mat.GetTexture("_MainTex")))
                     {
-                        sb.Append("    Connect: \"OO\", \"Texture::" + @mat.name + "_diff" + "\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\"\r\n");
+                        sw.Write("    Connect: \"OO\", \"Texture::" + @mat.name + "_diff" + "\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\"\r\n");
                     }
                 }
             }
@@ -792,13 +816,13 @@ class SaveFBX
                 {
                     if (mat.HasProperty("_BumpMap") && (mat.GetTexture("_BumpMap")))
                     {
-                        sb.Append("    Connect: \"OO\", \"Texture::" + @mat.name + "_bump" + "\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\"\r\n");
+                        sw.Write("    Connect: \"OO\", \"Texture::" + @mat.name + "_bump" + "\", \"Model::ImportedObject" + Convert.ToString(obj+1) + "\"\r\n");
                     }
                 }
             }
-            sb.Append("}\r\n");
-            sb.Append(FBXFooter());
-            sw.Write(sb.ToString().Replace("E-0", "e-00"));
+            sw.Write("}\r\n");
+            sw.Write(FBXFooter());
+            //sw.Write(sb.ToString().Replace("E-0", "e-00"));
             sw.Close();
             sw.Dispose();
             EditorUtility.ClearProgressBar();
