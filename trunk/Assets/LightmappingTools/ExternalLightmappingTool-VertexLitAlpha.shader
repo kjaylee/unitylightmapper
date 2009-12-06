@@ -15,7 +15,8 @@ SubShader {
 	Tags {"Queue"="Transparent"}
 	Fog { Color [_AddFog] }
 	ColorMask RGB
-
+	
+	ZWrite Off
 	// Alpha mask pass
 	Pass {
 		Name "BASE"
