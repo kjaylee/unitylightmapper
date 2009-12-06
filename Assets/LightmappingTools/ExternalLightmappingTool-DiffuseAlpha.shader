@@ -10,6 +10,7 @@ Shader "ExternalLightmappingTool/LightmappedDiffuseAlpha" {
 		Blend One One
 		ColorMask RGB
 		
+		Zwrite Off
 		// Alpha mask pass
 		Pass {
 			Name "BASE"

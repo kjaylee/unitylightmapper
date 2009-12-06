@@ -10,6 +10,7 @@ Shader "ExternalLightmappingTool/LightmappedBumpedSpecularAlpha" {
      }
      SubShader {
 	  Tags {Queue=Transparent}
+		Zwrite Off
           UsePass "ExternalLightmappingTool/LightmappedDiffuseAlpha/BASE"
           UsePass "Transparent/Bumped Specular/PPL"
      }
