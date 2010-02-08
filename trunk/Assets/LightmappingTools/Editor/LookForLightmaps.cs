@@ -17,6 +17,11 @@ public class LookForLightmaps : AssetPostprocessor
     // Use this for initialization
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
+        LightmappingTool.LoadObjects();
+        if (LightmappingTool.window!=null) LightmappingTool.window.Repaint();
+        
+
+
         bool Found=false;
         foreach (string i in importedAssets)
         {
@@ -70,7 +75,6 @@ public class LookForLightmaps : AssetPostprocessor
             if (LightmappingTool.LMdir[0] != Convert.ToChar("/")) LightmappingTool.LMdir = "/" + LightmappingTool.LMdir;
             System.IO.Directory.CreateDirectory(Application.dataPath + LightmappingTool.LMdir.Replace("<sceneName>", Path.GetFileNameWithoutExtension(EditorApplication.currentScene)));
         }
-        LightmapSettings.lightmaps = data;
+        LightmapSettings.lightmaps = data;   
     }
-
 }

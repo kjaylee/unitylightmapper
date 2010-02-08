@@ -23,7 +23,15 @@ class SaveFBX
         offsetsArray = new ArrayList();
 
         //TextWriter stringWriter = new StringWriter();
-        using (TextWriter sw = new StreamWriter("MaxFiles\\" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx"))
+        string sciezka;
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+        	sciezka = "MaxFiles\\" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx";
+        }
+        else{
+        	sciezka = "MaxFiles/" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx";
+        }
+        using (TextWriter sw = new StreamWriter(sciezka))
         {
             EditorUtility.DisplayProgressBar("Exporting FBX", "Setting headers...", 0.1f);
             StringBuilder sb = new StringBuilder();
@@ -251,7 +259,7 @@ class SaveFBX
                 {
                     if (mesh.sharedMesh.uv2.Length < mesh.sharedMesh.vertexCount)
                     {
-                        Debug.Log(mesh.name + " has less uv verticles then mesh verticles");
+                        Debug.Log(mesh.name + " has less uv2 verticles then mesh verticles");
                         for (int j = 0; j < mesh.sharedMesh.vertexCount; j++)
                         {
                             sb.Append("0.0!0.0!");
@@ -577,6 +585,7 @@ class SaveFBX
                 sw.Write("Model: \"Model::ImportedLight" + (i+1) + "\", \"Light\" {\r\n");
                 sw.Write("        Version: 232\r\n");
                 sw.Write("        Properties60:  {\r\n");
+                
                 sw.Write("            Property: \"PreRotation\", \"Vector3D\", \"\",-90,0,0\r\n");
                 sw.Write("            Property: \"PostRotation\", \"Vector3D\", \"\",0,0," + Convert.ToString(-lights[i].transform.eulerAngles.z).Replace(",", ".") + "\r\n");
                 sw.Write("            Property: \"RotationActive\", \"bool\", \"\",1\r\n");
@@ -605,6 +614,7 @@ class SaveFBX
                 sw.Write("            Property: \"FarAttenuationEnd\", \"Number\", \"A+N\",200\r\n");
                 sw.Write("            Property: \"CastShadows\", \"bool\", \"N\",1\r\n");
                 sw.Write("            Property: \"ShadowColor\", \"Color\", \"A+N\",0,0,0\r\n");
+                
                 sw.Write("            Property: \"3dsMax\", \"Compound\", \"N\"\r\n");
                 sw.Write("            Property: \"3dsMax|ClassIDa\", \"int\", \"N\",4113\r\n");
                 sw.Write("            Property: \"3dsMax|ClassIDb\", \"int\", \"N\",0\r\n");
@@ -625,6 +635,7 @@ class SaveFBX
                 sw.Write("            Property: \"3dsMax|ParamBlock_0|Atmosphere Color Amount\", \"Float\", \"AN\",1\r\n");
                 sw.Write("            Property: \"3dsMax|ParamBlock_0|Shadow Density\", \"Float\", \"AN\",1\r\n");
                 sw.Write("            Property: \"3dsMax|ParamBlock_0|_Unnamed_Parameter_14\", \"int\", \"N\",0\r\n");
+                
                 sw.Write("        }\r\n");
                 sw.Write("        MultiLayer: 0\r\n");
                 sw.Write("        MultiTake: 0\r\n");
@@ -778,7 +789,7 @@ class SaveFBX
             sw.Write("            Property: \"FrontAxisSign\", \"int\", \"\",1\r\n");
             sw.Write("            Property: \"CoordAxis\", \"int\", \"\",0\r\n");
             sw.Write("            Property: \"CoordAxisSign\", \"int\", \"\",1\r\n");
-            sw.Write("            Property: \"OriginalUpAxis\", \"int\", \"\",2\r\n");
+            sw.Write("            Property: \"OriginalUpAxis\", \"int\", \"\",1\r\n");
             sw.Write("            Property: \"OriginalUpAxisSign\", \"int\", \"\",1\r\n");
             sw.Write("            Property: \"UnitScaleFactor\", \"double\", \"\"," + LightmappingTool.exportScale +"\r\n");
             sw.Write("        }\r\n");
