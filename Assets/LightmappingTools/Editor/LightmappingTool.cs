@@ -22,7 +22,7 @@ public class LightmappingTool : EditorWindow
     //possible resolution array, adding new will effect in higher possible resolution
     static public string[] resolutions = new string[6] { "128x128", "256x256", "512x512", "1024x1024", "2048x2048", "4096x4096" };
     //you may change this to change the lightmap format output 
-    static public string fileFormat = ".png";
+    static public string fileFormat = ".tif";
     
     //if you don't like the logo taking your precious screen space, then don't throw this one out
     //but throw logo.png instead.
@@ -56,6 +56,8 @@ public class LightmappingTool : EditorWindow
     static public Vector2 temp;
     static string sceneName="";
 
+    static public LightmappingTool window;
+
     static ArrayList cantOpen = new ArrayList();
 
 
@@ -75,7 +77,7 @@ public class LightmappingTool : EditorWindow
     static void Init()
     {
         LoadObjects();
-        LightmappingTool window = (LightmappingTool)EditorWindow.GetWindow(typeof(LightmappingTool));
+        window = (LightmappingTool)EditorWindow.GetWindow(typeof(LightmappingTool));
         window.title = "External Lightmapping tool";
         window.position = new Rect(100.0f, 100.0f, 315.0f, 400.0f);
         window.minSize = new Vector2(315.0f, 400.0f);
@@ -111,7 +113,7 @@ public class LightmappingTool : EditorWindow
     }
 
 
-    private static void LoadObjects()
+    public static void LoadObjects()
     {
         allData = new ArrayList();
         allData.Add(new ArrayList());
@@ -860,6 +862,7 @@ public class LightmappingTool : EditorWindow
         {
             LoadCurrentObjects();
         }
+        if (window != null) window.Repaint();
     }
     void PickSelected()
     {
@@ -1157,7 +1160,7 @@ public class LightmappingTool : EditorWindow
         {
             //Needed preparations before looking for lightmaps
             SaveFBX save = new SaveFBX();
-            bool Done = save.ExportFBX(ref bigArray, ref materialsArray, ref uniqueMaterialsArray, ref totalUniqueMaterials, ref lights ,textures, totalCount);
+            bool Done = save.ExportFBX(ref bigArray, ref materialsArray, ref uniqueMaterialsArray, ref totalUniqueMaterials, ref lights, textures, totalCount);
             if (Done)
             {
                 save = null;
@@ -1166,38 +1169,133 @@ public class LightmappingTool : EditorWindow
                 {
                     for (int j = 0; j < ((MeshFilter[])bigArray[i]).Length; j++)
                     {
-                        sizee = ((Rect[])SaveFBX.offsetsArray[i])[j].width;                        
+                        sizee = ((Rect[])SaveFBX.offsetsArray[i])[j].width;
                         ((MeshFilter[])bigArray[i])[j].renderer.lightmapTilingOffset = new Vector4(sizee, sizee, ((((Rect[])SaveFBX.offsetsArray[i]))[j].x), (((Rect[])SaveFBX.offsetsArray[i])[j].y));
                     }
                 }
-                bool turnedToMax=false;
-                try
+                if (Application.platform == RuntimePlatform.WindowsEditor)
                 {
-                    turnedToMax = SwitchWindows.TurnTo(Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".max");
-                }
-                catch 
-                {
-                    EditorUtility.DisplayDialog("Switching to max failed","Exporting succesful, but unluckily you've got to switch to max manually and press Reimport button","ok");
-                }
-                PrepareBatchScript.Prepare();
-                if ((appPaths.Count > 0) && !turnedToMax)
-                {
-                    EditorUtility.DisplayDialog("Exporting succesfull", "An external app will now start and attempt to import the fbx file.\nPlease wait.", "OK");
-                    if (appSelect[selectedApp].Contains("3dsmax")) //This is done only to show how to extend the system to next rendering tools
+                    
+                    
+                    if ((appPaths.Count > 0))
                     {
                         
-                        string MaxParameters = " -U MAXScript \"" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".ms\"";
-                        if (((string)appPaths[selectedApp]).Length + MaxParameters.Length >= 256)
+                        if (appSelect[selectedApp].Contains("3dsmax")) //This is done only to show how to extend the system to next rendering tools
                         {
-                            UnityEngine.Debug.LogWarning("Your scene name or 3d application path name may be too long to export the scene properly.");
+                            PrepareBatchScript.PrepareMax();
+                            bool turnedToMax = false;
+                            try
+                            {
+                                turnedToMax = SwitchWindows.TurnTo(Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".max");
+                            }
+                            catch
+                            {
+                                EditorUtility.DisplayDialog("Switching to 3dsmax failed", "Exporting succesful, but unluckily you've got to switch to max manually and press Reimport button", "ok");
+                            }
+                            if (!turnedToMax)
+                            {
+                                EditorUtility.DisplayDialog("Exporting succesfull", "3dsmax will now start and try to import the fbx file.\nPlease wait.", "OK");
+                                string MaxParameters = " -U MAXScript \"" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".ms\"";
+                                if (((string)appPaths[selectedApp]).Length + MaxParameters.Length >= 256)
+                                {
+                                    UnityEngine.Debug.LogWarning("Your scene name or 3d application path name may be too long to export the scene properly.");
+                                }
+                                //UnityEngine.Debug.Log(MaxParameters);
+                                ProcessStartInfo startInfo = new ProcessStartInfo((string)appPaths[selectedApp], MaxParameters);
+                                startInfo.UseShellExecute = true;
+                                startInfo.WorkingDirectory = MaxFiles;
+                                Process.Start(startInfo);
+                                GUIUtility.ExitGUI();
+                            }
                         }
-                        //UnityEngine.Debug.Log(MaxParameters);
-                        ProcessStartInfo startInfo = new ProcessStartInfo((string)appPaths[selectedApp],MaxParameters);
-                        startInfo.UseShellExecute =true;
-                        startInfo.WorkingDirectory = MaxFiles;
-                        Process.Start(startInfo);
-                        GUIUtility.ExitGUI();
+                        else if (appSelect[selectedApp].Contains("maya"))
+                        {
+                            PrepareBatchScript.PrepareMaya();
+                            bool turnedToMaya = false;
+                            try
+                            {
+                                turnedToMaya = SwitchWindows.TurnTo(Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mb");
+                            }
+                            catch
+                            {
+                                EditorUtility.DisplayDialog("Switching to Maya failed", "Exporting succesful, but unluckily you've got to switch to maya manually and press Reimport button", "ok");
+                            }
+                            if (!turnedToMaya)
+                            {
+                                EditorUtility.DisplayDialog("Exporting succesfull", "Maya will now start and try import the fbx file.\nPlease wait.", "OK");
+                                string Parameters = " -script \"" + MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + "_startup.mel\"";
+                                //string Parameters = " -script \"" + MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".py\"";
+                                if (((string)appPaths[selectedApp]).Length + Parameters.Length >= 256)
+                                {
+                                    UnityEngine.Debug.LogWarning("Your scene name or 3d application path name may be too long to export the scene properly.");
+                                }
+                                UnityEngine.Debug.Log((string)appPaths[selectedApp]);
+                                //System.Diagnostics.Processes.Start("")
+                                ProcessStartInfo startInfo = new ProcessStartInfo((string)appPaths[selectedApp], Parameters);
+                                startInfo.UseShellExecute = false;
+                                startInfo.WorkingDirectory = MaxFiles;
+                                //Process.Start(startInfo);
+                                Process.Start(startInfo);
+                                UnityEngine.Debug.Log("Exporting using maya!");
+                                GUIUtility.ExitGUI();
+                            }
+                        }
                     }
+                }
+                else if (Application.platform == RuntimePlatform.OSXEditor)
+                {
+                    if (appPaths.Count > 0)
+                    {
+                        if (appSelect[selectedApp].Contains("Maya")) //This is done only to show how to extend the system to next rendering tools
+                        {
+                        	PrepareBatchScript.PrepareMaya();
+                        	
+                        	
+                        	//Checking if Maya is open :)
+                        	Process p = new Process();
+							p.StartInfo.UseShellExecute = false;
+							p.StartInfo.RedirectStandardOutput = true;
+							p.StartInfo.WorkingDirectory = "/usr/bin/";
+							p.StartInfo.Arguments = "-e 'tell application \"System Events\"' -e 'set runningApps to name of every application process' -e 'end tell' -e 'if runningApps does not contain \"Maya\" then return 0' -e 'tell application \"Maya\" to activate' -e 'return 1'";
+							//p.StartInfo.FileName = Application.dataPath + "/LightmappingTools/findMaya.app" + "/Contents/MacOS/applet";
+							//p.StartInfo.FileName = "/usr/bin/osascript \""+Application.dataPath + "/LightmappingTools/findMaya3.scptd\"";
+							//p.StartInfo.FileName = "osascript 
+							
+							//p.StartInfo.FileName = "osascript \"return 1\"";
+							p.StartInfo.FileName = "osascript";
+							p.Start();
+							string output = p.StandardOutput.ReadToEnd();
+							p.WaitForExit();	
+							//output = p.StandardOutput.ReadToEnd();
+							
+							//p.StartInfo.FileName = Application.dataPath + "/LightmappingTools/findMaya.app";
+							//p.Start();
+							//string output = Process.StandardOutput.ReadToEnd();
+							
+							UnityEngine.Debug.Log("Seeks maya and outputs: #" + output + "#");
+							if (output=="0\n"){
+							
+                            	EditorUtility.DisplayDialog("Exporting succesfull", "Maya will now start and try import the fbx file.\nPlease wait.", "OK");
+                            	string Parameters = " -script \"" + MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + "_startup.mel\"";
+                            	//string Parameters = " -script \"" + MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".py\"";
+                            	if (((string)appPaths[selectedApp]).Length + Parameters.Length >= 256)
+                            	{
+                            	    UnityEngine.Debug.LogWarning("Your scene name or 3d application path name may be too long to export the scene properly.");
+                            	}
+                            	UnityEngine.Debug.Log("open " +(string)appPaths[selectedApp] + "/Contents/MacOS/Maya");
+                            	UnityEngine.Debug.Log(Parameters);
+                            	//System.Diagnostics.Processes.Start("")
+                            	ProcessStartInfo startInfo = new ProcessStartInfo((string)appPaths[selectedApp] + "/Contents/MacOS/Maya", Parameters);
+                            	startInfo.UseShellExecute = false;
+                            	startInfo.WorkingDirectory = MaxFiles;
+                            	//Process.Start(startInfo);
+                            	Process.Start(startInfo);
+                            	UnityEngine.Debug.Log("Exporting using maya!");
+                            	GUIUtility.ExitGUI();
+							}
+                        }
+                    }
+
                 }
                 /*else
                 {
@@ -1216,11 +1314,20 @@ public class LightmappingTool : EditorWindow
         System.GC.WaitForPendingFinalizers();
     }
 
-
     private void AddApp()
     {
-        string toAdd = EditorUtility.OpenFilePanel("Point the 3dsmax application", Application.dataPath, "exe");
-        
+        if (Application.platform == RuntimePlatform.WindowsEditor) AddWinApp();
+        else if (Application.platform == RuntimePlatform.OSXEditor) AddOSXApp();
+        else EditorUtility.DisplayDialog("Not compatible system", "Sorry, you're system isn't currently supported by the Lightmapping Tool.", "OK");
+        GUIUtility.ExitGUI();
+
+    }
+
+
+    private void AddWinApp()
+    {
+        string toAdd = EditorUtility.OpenFilePanel("Point the 3dsmax or Maya application", Application.dataPath, "exe");
+
         if (toAdd.Length != 0)
         {
             if (toAdd.Contains("3dsmax"))
@@ -1230,7 +1337,24 @@ public class LightmappingTool : EditorWindow
                     if (appPaths.Contains(toAdd)) return;
                 }
                 appPaths.Add(toAdd);
-                appSelect = new string[appPaths.Count+1];
+                appSelect = new string[appPaths.Count + 1];
+                for (int i = 0; i < appPaths.Count; i++)
+                {
+                    string[] name = ((string)appPaths[i]).Split(new char[1] { System.Convert.ToChar("/") });
+                    appSelect[i] = "" + (i + 1) + ". " + name[name.Length - 2] + "\\" + name[name.Length - 1] + " " + ((((string)appPaths[i]).Contains("x86")) ? "(32-bit)" : "");
+                }
+                selectedApp = appSelect.Length - 2;
+                appSelect[appPaths.Count] = "Add application";
+                StorePreferences.Save();
+            }
+            else if (toAdd.Contains("maya"))
+            {
+                if (appPaths.Count > 0)
+                {
+                    if (appPaths.Contains(toAdd)) return;
+                }
+                appPaths.Add(toAdd);
+                appSelect = new string[appPaths.Count + 1];
                 for (int i = 0; i < appPaths.Count; i++)
                 {
                     string[] name = ((string)appPaths[i]).Split(new char[1] { System.Convert.ToChar("/") });
@@ -1242,7 +1366,7 @@ public class LightmappingTool : EditorWindow
             }
             else
             {
-                EditorUtility.DisplayDialog("Not compatible application", "Currently only 3dsmax works with the Lightmapping system", "OK");
+                EditorUtility.DisplayDialog("Not compatible application", "Currently only 3dsmax and Maya works with the Lightmapping system on Windows", "OK");
             }
 
         }
@@ -1250,7 +1374,42 @@ public class LightmappingTool : EditorWindow
         {
             return;
         }
+    }
 
+    private void AddOSXApp()
+    {
+        string toAdd = EditorUtility.OpenFilePanel("Point the Maya application", Application.dataPath, "app");
+
+        if (toAdd.Length != 0)
+        {
+            if (toAdd.Contains("Maya"))
+            {
+                if (appPaths.Count > 0)
+                {
+                    if (appPaths.Contains(toAdd)) return;
+                }
+                appPaths.Add(toAdd);
+                appSelect = new string[appPaths.Count + 1];
+                for (int i = 0; i < appPaths.Count; i++)
+                {
+                    string[] name = ((string)appPaths[i]).Split(new char[1] { System.Convert.ToChar("/") });
+                    appSelect[i] = "" + (i + 1) + ". " + name[name.Length - 2] + "\\" + name[name.Length - 1];
+                }
+                selectedApp = appSelect.Length - 2;
+                appSelect[appPaths.Count] = "Add application";
+                StorePreferences.Save();
+            }
+
+            else
+            {
+                EditorUtility.DisplayDialog("Not compatible application", "Currently only Maya works with the Lightmapping system on OSX", "OK");
+            }
+
+        }
+        else
+        {
+            return;
+        }
     }
 
 }

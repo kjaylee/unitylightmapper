@@ -14,9 +14,17 @@ using UnityEditor;
 
 class PrepareBatchScript
 {
-    static public void Prepare()
+    static public void PrepareMax()
     {
-        using (StreamWriter sw = new StreamWriter("MaxFiles\\"+Path.GetFileNameWithoutExtension(EditorApplication.currentScene)+".ms"))
+    	string sciezka;
+    	if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+        	sciezka = "MaxFiles\\" +Path.GetFileNameWithoutExtension(EditorApplication.currentScene)+".ms";
+        }
+        else{
+        	sciezka = "MaxFiles/" +Path.GetFileNameWithoutExtension(EditorApplication.currentScene)+".ms";
+        }
+        using (StreamWriter sw = new StreamWriter(sciezka))
         {
             StringBuilder sb = new StringBuilder();
             
@@ -40,7 +48,7 @@ class PrepareBatchScript
 		        sb.Append("     messagebox(\"Mental Ray renderer assigned!\")\r\n");
 	            sb.Append(" )\r\n");
 	            sb.Append(" else(\r\n");
-		        sb.Append("     messagebox(\"Keep on mind that lightmapping tool doesn't support Scanline renderer, while Mental Ray was not found in your system.\")\r\n");
+		        sb.Append("     messagebox(\"Mental Ray was not found in your system.\")\r\n");
 	            sb.Append(" )\r\n");
             sb.Append(")\r\n");
             sb.Append("if ((maxFileName == undefined) or (maxFileName == \"\")) then (loadMaxFile (presetDir + sceneName + \".max\"))\r\n");
@@ -124,6 +132,112 @@ class PrepareBatchScript
             sw.Close();
         }
 
+    }
+
+
+    static public void PrepareMaya()
+    {
+        //Starter
+        string sciezka;
+    	if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+        	sciezka = "MaxFiles\\" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + "_startup.mel";
+        }
+        else{
+        	sciezka = "MaxFiles/" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + "_startup.mel";
+        }
+        using (StreamWriter sw = new StreamWriter(sciezka))
+        {
+            StringBuilder sb = new StringBuilder();
+            StreamReader s = File.OpenText(Application.dataPath + "/LightmappingTools/melEngine.mel");
+            sb.AppendLine("global int $resArray[];");
+            
+
+            sb.AppendLine("global proc string savePath(){ return \"" + Application.dataPath + LightmappingTool.LMdir.Replace("<sceneName>", Path.GetFileNameWithoutExtension(EditorApplication.currentScene)) + "\";}\n");
+            sb.AppendLine("global proc string fbxFile(){ return \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx" + "\";}\n");
+            sb.AppendLine("global proc string melFile(){ return \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mel" + "\";}\n");
+            sb.AppendLine("global proc string logoFile(){ return \"" + Application.dataPath + "/LightmappingTools/logo2.png" + "\";}\n");
+            sb.AppendLine("global proc createFile(){");
+            sb.AppendLine(" int $exists = `file -q -ex \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mb\"`;");
+            sb.AppendLine(" if ($exists)");
+            sb.AppendLine(" {");
+            sb.AppendLine("     file -o \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mb\";");
+            sb.AppendLine(" }");
+            sb.AppendLine(" else { ");
+            sb.AppendLine("     file -ea -type mayaBinary \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mb\";");
+            sb.AppendLine("     file -o \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mb\";");
+            sb.AppendLine(" }");
+            sb.AppendLine("}");
+            sb.AppendLine("evalDeferred -lp \"python(\\\"import sys\\\");python(\\\"import os\\\");python(\\\"sys.path.append('" + Application.dataPath + "/LightmappingTools/" + "')\\\");python(\\\"import timer\\\");\";\n\n");
+            sb.AppendLine("evalDeferred -lp \"createFile\";");
+
+            sb.Append(s.ReadToEnd());
+            
+            sb.AppendLine("global proc checkFBXdate()");
+             sb.AppendLine("{");
+             sb.AppendLine("	global float $fbxModDate;");
+             sb.AppendLine("	print(\"Tick!\");");
+             sb.AppendLine("	float $newDate = python(\"os.path.getmtime(\\\"\" + `fbxFile` + \"\\\")\");");
+             sb.AppendLine("	if ($newDate!=$fbxModDate){");
+             sb.AppendLine("		evalDeferred -lp \"source \\\"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mel" + "\\\";\";");
+             
+             //sb.AppendLine("		source `melFile`;");
+             sb.AppendLine("		$fbxModDate = $newDate;");
+             sb.AppendLine("	}");
+             sb.AppendLine("	startTimer(5, \"checkFBXdate;\");");
+             sb.AppendLine("}");
+            sb.AppendLine("evalDeferred -lp \"BatchBake\";");
+            sb.AppendLine("evalDeferred -lp \"startTimer(0, \\\"checkFBXdate;\\\")\";");
+            //sb.AppendLine("evalDeferred -lp \"source \\\"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mel\\\";\";");
+            sw.Write(sb.ToString());
+            sw.Close();
+        }
+
+
+
+
+		if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+        	sciezka = "MaxFiles\\" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mel";
+        }
+        else{
+        	sciezka = "MaxFiles/" + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".mel";
+        }
+
+        using (StreamWriter sw = new StreamWriter(sciezka))
+        {
+            StringBuilder sb = new StringBuilder();
+            
+            
+            sb.AppendLine("global int $resArray[];");
+            int k = 0;
+            foreach (System.Object item in LightmappingTool.res)
+            {
+                try
+                {
+                    sb.AppendLine("$resArray[" + k + "]=" + Convert.ToInt32(128 * Math.Pow(2, (Convert.ToInt32(item))))+";");
+                    k++;
+                    //sb.Append(",");
+                }
+                catch { }
+            }
+            
+            sb.AppendLine("");
+            sb.AppendLine("catchQuiet(`select -r \"ImportedObject*\"`);");
+            sb.AppendLine("catchQuiet(`delete`);");
+            sb.AppendLine("FBXImportMergeBackNullPivots -v false;");
+            sb.AppendLine("FBXImport -file \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx\";");
+
+
+                        //sb.Append("catch(`evalDeferred -lp \"dummyProc\"`);\n");
+            //sb.Append("evalDeferred -lp \"\";");
+            //sb.Append("evalDeferred -lp \"if (catch(`dummyProc`)){source \\\"" + Application.dataPath + "/LightmappingTools/melEngine.mel\\\";}\";");
+            //sb.Append("evalDeferred -lp \"source \\\"" + Application.dataPath + "/LightmappingTools/melEngine.mel\\\";\";");
+            //sb.Append("evalDeferred -lp \"reimport;\";");
+            sw.Write(sb.ToString());
+            sw.Close();
+        }
+        
     }
 }
 
