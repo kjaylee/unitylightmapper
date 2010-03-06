@@ -230,6 +230,14 @@ class PrepareBatchScript
             sb.AppendLine("FBXImportMergeBackNullPivots -v false;");
             sb.AppendLine("FBXImport -file \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx\";");
 
+        	sb.AppendLine("string $allLights[] = `ls -type \"light\"`;");
+        	sb.AppendLine("if (size($allLights)>0){");
+    		sb.AppendLine(" for ($LiteNum=0; $LiteNum < size($allLights); $LiteNum++)");
+    		sb.AppendLine(" {");
+    		sb.AppendLine("     setAttr ($allLights[$LiteNum]+\".useRayTraceShadows\") true;");
+    		sb.AppendLine(" }");
+        	sb.AppendLine("}");
+
            
                         //sb.Append("catch(`evalDeferred -lp \"dummyProc\"`);\n");
             //sb.Append("evalDeferred -lp \"\";");
