@@ -183,6 +183,7 @@ class PrepareBatchScript
              
              //sb.AppendLine("		source `melFile`;");
              sb.AppendLine("		$fbxModDate = $newDate;");
+             sb.AppendLine("        evalDeferred -lp \"catchQuiet(`enableRT`)\";");
              sb.AppendLine("	}");
              sb.AppendLine("	startTimer(5, \"checkFBXdate;\");");
              sb.AppendLine("}");
@@ -225,10 +226,11 @@ class PrepareBatchScript
             sb.AppendLine("");
             sb.AppendLine("catchQuiet(`select -r \"ImportedObject*\"`);");
             sb.AppendLine("catchQuiet(`delete`);");
+
             sb.AppendLine("FBXImportMergeBackNullPivots -v false;");
             sb.AppendLine("FBXImport -file \"" + LightmappingTool.MaxFiles + Path.GetFileNameWithoutExtension(EditorApplication.currentScene) + ".fbx\";");
 
-
+           
                         //sb.Append("catch(`evalDeferred -lp \"dummyProc\"`);\n");
             //sb.Append("evalDeferred -lp \"\";");
             //sb.Append("evalDeferred -lp \"if (catch(`dummyProc`)){source \\\"" + Application.dataPath + "/LightmappingTools/melEngine.mel\\\";}\";");

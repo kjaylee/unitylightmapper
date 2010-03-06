@@ -61,6 +61,7 @@ fn renderLightmap obj currentMapType Xsize Ysize channel fullFileName =
 	bi.addBakeElement currentMapType
 	bi.bakeChannel=channel
 	bi.bakeEnabled = true
+	bi.nDilations = 4
 	render rendertype:#bakeSelected outputwidth:Xsize outputheight:Ysize cancelled:&wasCancelled progressbar: true vfb: showVFB
 	format "rendering node:% channel:%\n" obj.name bi.bakeChannel
 )

@@ -1,0 +1,231 @@
+global float $fbxModDate=0.0;
+
+global proc BatchBake ()
+{
+
+	//set mental ray renderer
+	string $renderercurrent = `getAttr defaultRenderGlobals.currentRenderer`;
+	string $mentalRay = "mentalRay";
+	if ($renderercurrent != $mentalRay)
+	{
+			setAttr "defaultRenderGlobals.currentRenderer" -type "string" $mentalRay;
+			print("Mental Ray set!\n");
+	}
+    //test to see if the window already exists
+    if (`window -q -ex BatchBakeUI`) deleteUI BatchBakeUI;
+
+    //check box variable
+    global string $bakeShadows;
+  
+    
+    ////////////
+    //UI Setup//
+    ////////////
+    window -title ("Unity External Lightmapping Tool") 
+           -rtf 1
+           -mxb 0
+           -s 0 
+           BatchBakeUI;
+
+  	
+	
+    columnLayout -cw 170 
+                 mainCol;
+
+	image -w 170 -h 60 -image `logoFile`;
+
+    separator -style "none" -h 10;
+    
+    //separator -style "in" -h 10 -w 275;
+
+    //rowColumnLayout -nc 2 -cw 1 145 -cw 2 130;
+    //    setParent "..";
+    //separator -style "in" -h 10 -w 275;
+  
+    //rowColumnLayout -nc 2 
+     //               -cw 1 145 
+     //               -cw 2 130;
+     //   text -al "right" 
+     //        "Bake Camera = ";
+     //   optionMenu camList;
+//        textField -text "persp" 
+//                 camName;
+      //  setParent "..";
+    //separator -style "in" -h 10 -w 275;
+   // separator -style "none" -h 10;
+        button -label "Bake all now!"
+               -al "center"
+               -w 170 
+               -c ("bakeAll");
+		button -label "Bake selected now!"
+               -al "center"
+               -w 170 
+               -c ("bakeSelected");
+               
+    separator -style "in" -h 20 -w 170;
+
+		button -label "Reimport scene manually"
+               -al "center"
+               -w 170 
+               -c ("reimport");
+    //rowColumnLayout -nc 2 
+    //                -cw 1 145 
+    //                -cw 2 130;
+    //    button -label "** Reset **"
+    //           -w 80 
+    //           -c ("BatchBake");
+    //    button -label "** Delete ALL BakeSets **" 
+    //           -c ("deleteBakeSets");
+    //    setParent "..";
+    //  
+    //separator -style "in" 
+    //          -h 10 
+    //          -w 170;
+
+    showWindow BatchBakeUI;
+	miCreateDefaultNodes();
+}
+
+//--------------------------------------------------
+
+global proc deleteBakeSets()
+{
+  string $allSets[] = `ls -type "textureBakeSet"`;
+  if (`size($allSets)`>0){
+  		select -r -ne "BakeSett";
+  		delete;
+  }
+}
+global proc enableRT()
+{
+	string $allLights[] = `ls -type "light"`;
+	if (size($allLights)>0){
+		for ($LiteNum=0; $LiteNum < size($allLights); $LiteNum++)
+		{
+			setAttr ($allLights[$LiteNum]+".useRayTraceShadows") true;
+		}
+	}
+}
+proc string makeBakeNode(int $res, int $mode)
+{
+    
+	
+	string $node = createBakeSet("BakeSett", "textureBakeSet"); 
+    
+    setAttr ($node+".colorMode") $mode;
+
+    setAttr ($node+".occlusionRays") 128;
+    
+    setAttr ($node+".occlusionFalloff") 0;
+    
+	setAttr ($node+".orthogonalReflection") 1;
+	
+	setAttr ($node+".normalDirection") 1;
+	
+    setAttr -type "string" ($node+".prefix") ""; 
+	
+	
+    setAttr ($node+".xResolution") $res; 
+
+    setAttr ($node+".yResolution") $res; 
+
+    setAttr ($node+".fileFormat") 1; 
+
+    setAttr ($node+".bitsPerChannel") 3;
+
+    setAttr ($node+".samples") 5; 
+    
+    setAttr ($node+".bakeToOneMap") 1; 
+
+    setAttr ($node+".bakeAlpha") 0;
+
+    setAttr ($node+".alphaMode") 1;
+
+    setAttr ($node+".finalGatherQuality") 2;
+    
+    setAttr ($node+".finalGatherReflect") 0;
+    
+    setAttr ($node+".uvRange") 0;
+
+    setAttr ($node+".uMin") 1.0;
+
+    setAttr ($node+".uMax") 1.0;
+
+    setAttr ($node+".vMin") 1.0;
+
+    setAttr ($node+".vMax") 1.0;
+
+    setAttr ($node+".fillTextureSeams") 3.0;
+
+    setAttr ($node+".overrideUvSet") 1;
+
+    setAttr -type "string" ($node+".uvSetName") "UVChannel_3";
+
+    return $node;
+}
+
+
+global proc bakeSelected(){
+	
+	string $bakeObj[] = `ls -selection`;
+    string $cmd = "";
+	global int $resArray[];
+
+	for ($i=0; $i<`size($bakeObj)`; $i++)
+    {
+		catchQuiet(`deleteBakeSets`);
+		print("\nAt " + $i + " we try to bake " + $bakeObj[$i] + "\n");
+		select -r $bakeObj[$i];
+		
+		string $names[] = `ls -selection`;
+		int $namesize = `size($names[0])`;
+		string $nameNumber = `substring ($names[0]) 15 $namesize`;
+		
+		if ($nameNumber != ""){
+			int $nameNb= (int)$nameNumber;
+			$cmd = "convertLightmapSetup -camera persp -sh -bakeSetOverride " +  `makeBakeNode $resArray[$nameNb-1] 1`  + " -ulb -keepOrgSG";
+
+			
+			if (catch(`evalEcho($cmd)`))
+
+			{
+
+				print "!!first!!";	
+				$cmd = "convertLightmap -camera persp -sh -bakeSetOverride " +  `makeBakeNode $resArray[$nameNb-1] 1`  + " -ulb -keepOrgSG";
+				evalEcho($cmd);
+
+			}
+			else
+			{
+				print "!!second!!";
+			}
+			string $dest = `savePath` + "lightmap" + $nameNumber + ".tif";
+			string $src = `workspace -q -dir` + "lightMap/BakeSett.tif";
+			sysFile -copy $dest $src;
+		}
+
+		//if (catch( sysFile "F:/maya/projects/default/renderData/mentalray/lightMap/BakeSett.tif")){}
+		
+		//print("TU JEST: " + $src);
+		
+	}
+}
+
+global proc bakeAll()
+{
+	catchQuiet(`select -r -ado "ImportedObject*"`);
+	bakeSelected;
+}
+
+global proc reimport()
+{
+	global float $fbxModDate;
+	$fbxModDate = 0.0;
+}
+
+global proc startTimer(int $runTime, string $command)
+{
+	python("import timer;"
+		+"timer.startTimerObj( " + $runTime + ", \"" + encodeString($command) + "\")");
+
+}
