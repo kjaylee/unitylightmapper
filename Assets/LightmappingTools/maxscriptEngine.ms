@@ -70,6 +70,7 @@ fn fileExists fname = (getfiles fname).count != 0
 
 fn BakeObjects=
 (
+	wasCancelled = false
 	progressStart "Baking textures..."
 	
 	local alightMap
@@ -89,10 +90,9 @@ fn BakeObjects=
 	(
 		alightMap =LightingMap()
 	)
-	
 	for i in Geometry do
 	(
-		if ((findString i.name "ImportedObj")!=undefined) then
+		if ((findString i.name "ImportedObj")!=undefined and (not wasCancelled)) then
 		(
 			j = (substring i.name 15 10) as integer
 			if (not getProgressCancel()) then 
@@ -105,9 +105,7 @@ fn BakeObjects=
 				)
 				catch print ("There was a problem rendering lightmap of object " + i.name)
 			)
-			
 		)
-		
 		--percent= (100.0*j)/Geometry.count
 		--progressUpdate percent
 	)

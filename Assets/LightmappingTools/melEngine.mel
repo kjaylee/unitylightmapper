@@ -2,7 +2,6 @@ global float $fbxModDate=0.0;
 
 global proc BatchBake ()
 {
-
 	//set mental ray renderer
 	string $renderercurrent = `getAttr defaultRenderGlobals.currentRenderer`;
 	string $mentalRay = "mentalRay";
@@ -68,19 +67,6 @@ global proc BatchBake ()
                -al "center"
                -w 170 
                -c ("reimport");
-    //rowColumnLayout -nc 2 
-    //                -cw 1 145 
-    //                -cw 2 130;
-    //    button -label "** Reset **"
-    //           -w 80 
-    //           -c ("BatchBake");
-    //    button -label "** Delete ALL BakeSets **" 
-    //           -c ("deleteBakeSets");
-    //    setParent "..";
-    //  
-    //separator -style "in" 
-    //          -h 10 
-    //          -w 170;
 
     showWindow BatchBakeUI;
 	miCreateDefaultNodes();
