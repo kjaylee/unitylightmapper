@@ -144,7 +144,7 @@ fn BakeSelected=
 	
 	for i in (Selection as array) do
 	(
-		if ((findString i.name "ImportedObj")!=undefined) then
+		if ((findString i.name "ImportedObj")!=undefined and (not wasCancelled)) then
 		(
 			j = (substring i.name 15 10) as integer
 			if (not getProgressCancel()) then 
