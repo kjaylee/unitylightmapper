@@ -159,14 +159,30 @@ public class LightmappingTool : EditorWindow
                 {
                     if (!((ArrayList)allData[rn.lightmapIndex]).Contains(rn.transform))
                     {
-                        CalcArea.CheckIfNormalized((MeshFilter)rn.GetComponent(typeof(MeshFilter)));
-                        ((ArrayList)allData[rn.lightmapIndex]).Add(rn.transform);
+                        MeshFilter component = (MeshFilter)rn.GetComponent(typeof(MeshFilter));
+                        if (component.sharedMesh != null)
+                        {
+                            CalcArea.CheckIfNormalized((MeshFilter)rn.GetComponent(typeof(MeshFilter)));
+                            ((ArrayList)allData[rn.lightmapIndex]).Add(rn.transform);
+                        }
+                        else
+                        {
+                            rn.lightmapIndex = -1;
+                        }
                     }
                 }
                 else
                 {
-                    CalcArea.CheckIfNormalized((MeshFilter)rn.GetComponent(typeof(MeshFilter)));
-                    ((ArrayList)allData[rn.lightmapIndex]).Add(rn.transform);
+                    MeshFilter component = (MeshFilter)rn.GetComponent(typeof(MeshFilter));
+                    if (component.sharedMesh != null)
+                    {
+                        CalcArea.CheckIfNormalized((MeshFilter)rn.GetComponent(typeof(MeshFilter)));
+                        ((ArrayList)allData[rn.lightmapIndex]).Add(rn.transform);
+                    }
+                    else
+                    {
+                        rn.lightmapIndex = -1;
+                    }
                 }
 
             }
@@ -845,9 +861,13 @@ public class LightmappingTool : EditorWindow
                                     continue;
                                 }
                             }
-                            CalcArea.CheckIfNormalized((MeshFilter)((Renderer)i).GetComponent(typeof(MeshFilter)));
-                            ((ArrayList)allData[lightmapIndex]).Add(((Renderer)i).transform);
-                            ((Renderer)i).lightmapIndex = lightmapIndex;
+                            MeshFilter component = (MeshFilter)((Renderer)i).GetComponent(typeof(MeshFilter));
+                            if (component.sharedMesh != null)
+                            {
+                                CalcArea.CheckIfNormalized(component);
+                                ((ArrayList)allData[lightmapIndex]).Add(((Renderer)i).transform);
+                                ((Renderer)i).lightmapIndex = lightmapIndex;
+                            }
                         }
                     }
                 }
@@ -895,9 +915,15 @@ public class LightmappingTool : EditorWindow
                         continue;
                     }
                 }
-                CalcArea.CheckIfNormalized((MeshFilter)item.GetComponent(typeof(MeshFilter)));
-                ((ArrayList)allData[currentLightmap]).Add(item.transform);
-                item.lightmapIndex = currentLightmap;
+                MeshFilter component = (MeshFilter)item.GetComponent(typeof(MeshFilter));
+                if (component.sharedMesh != null)
+                {
+                    CalcArea.CheckIfNormalized(component);
+                    ((ArrayList)allData[currentLightmap]).Add(item.transform);
+                    item.lightmapIndex = currentLightmap;
+                }
+
+                
             }
 
         }

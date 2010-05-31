@@ -39,6 +39,8 @@ class CalcArea
 
     public static void CheckIfNormalized(MeshFilter temp)
     {
+        
+        
         //Path search
         Transform current = temp.transform;
         while (current.parent!=null)
