@@ -79,12 +79,22 @@ fn BakeObjects=
 		try
 		(
 			alightMap=VRay_RawTotalLightingMap()
+			print "Using VRay_RawTotalLightingMap"
 		)
 		catch
 		(
-			alightMap=VRayRawTotalLightingMap()
+		if ((findString (renderers.current as String) "V_Ray_Adv_1_50_SP4")!=undefined) then
+			(
+				alightMap=VRayTotalLightingMap()
+				print "Using VRayTotalLightingMap"
+			)
+			else
+			(
+				alightMap=VRayRawTotalLightingMap()
+				print "Using VRayRawTotalLightingMap"
+			)
 		)
-		print "Using VRay_RawTotalLightingMap"
+		
 	)
 	else
 	(
