@@ -445,27 +445,35 @@ public class LightmappingTool : EditorWindow
                             EditorGUILayout.BeginVertical();
                             foreach (Material m in tr.renderer.sharedMaterials)
                             {
-                                int choice = 0;
-                                GUI.color = Color.white;
-                                choice = shaderBuffer.IndexOf(m.shader);
+								if (m==null){ 
+									// UnityEngine.Debug.Log(tr.name + " has a missing material in MeshRenderer!");
+									GUI.color = new Color(0.9f, 0.7f, 0.7f);
+									GUILayout.Box("Missing a material");
+									GUI.color = Color.white;
+								}
+								else{
+									int choice = 0;
+									GUI.color = Color.white;
+									choice = shaderBuffer.IndexOf(m.shader);
 
-                                if (choice == -1) choice = 0;
-                                if (choice == 0)
-                                {
-                                    GUI.color = new Color(0.9f, 0.45f, 0.45f);
-                                    incompatible = true;
-                                }
-                                if (choice != (tmps = EditorGUILayout.Popup(choice, compatibleShaders, GUILayout.Width(150))))
-                                {
-                                    choice = tmps;
-                                    Undo.RegisterUndo(m, "Shader change on " + tr.name);
-                                    if (choice == 0) m.shader = Shader.Find("Bumped Diffuse");
-                                    else
-                                    {
-                                        m.shader = (Shader)shaderBuffer[choice];
-                                    }
-                                }
-                                GUI.color = Color.white;
+									if (choice == -1) choice = 0;
+									if (choice == 0)
+									{
+										GUI.color = new Color(0.9f, 0.45f, 0.45f);
+										incompatible = true;
+									}
+									if (choice != (tmps = EditorGUILayout.Popup(choice, compatibleShaders, GUILayout.Width(150))))
+									{
+										choice = tmps;
+										Undo.RegisterUndo(m, "Shader change on " + tr.name);
+										if (choice == 0) m.shader = Shader.Find("Bumped Diffuse");
+										else
+										{
+											m.shader = (Shader)shaderBuffer[choice];
+										}
+									}
+									GUI.color = Color.white;
+								}
                             }
                             EditorGUILayout.EndVertical();
 
@@ -1142,6 +1150,10 @@ public class LightmappingTool : EditorWindow
                     bool isUnique = true;
                     foreach (Material mat in ((MeshFilter)mfList[i]).renderer.sharedMaterials)
                     {
+						if (mat ==null){
+							UnityEngine.Debug.LogError(((MeshFilter) mfList[i]).transform.name + " has a missing material in its MeshRenderer! Fix it before exporting!");
+							return;
+						}
                         if (totalUniqueMaterials.Contains(mat))
                         {
                             isUnique = false;
