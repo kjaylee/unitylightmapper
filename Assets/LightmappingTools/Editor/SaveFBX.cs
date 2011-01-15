@@ -603,7 +603,7 @@ class SaveFBX
                 sw.Write("            Property: \"HotSpot\", \"Number\", \"A+N\"," + ((enumType != 0) ? lights[i].spotAngle: 0) + "\r\n");
                 sw.Write("            Property: \"Cone angle\", \"Number\", \"A+N\"," + Convert.ToString(lights[i].spotAngle).Replace(",", ".") + "\r\n");
                 sw.Write("            Property: \"Fog\", \"Number\", \"A+N\",0\r\n");
-                sw.Write("            Property: \"DecayType\", \"enum\", \"N\"," + (lights[i].attenuate ? 1 : 0) + "\r\n");
+                sw.Write("            Property: \"DecayType\", \"enum\", \"N\",1\r\n");
                 sw.Write("            Property: \"DecayStart\", \"Number\", \"A+N\",40\r\n");
                 sw.Write("            Property: \"FileName\", \"KString\", \"N\", \"\"\r\n");
                 sw.Write("            Property: \"EnableNearAttenuation\", \"bool\", \"N\",0\r\n");
