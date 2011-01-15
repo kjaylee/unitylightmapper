@@ -194,7 +194,7 @@ public class LightmappingTool : EditorWindow
     private static void LoadShaders()
     {
         //Load shaders
-        Object[] shaders = UnityEngine.Object.FindObjectsOfTypeAll(typeof(Shader));
+        Object[] shaders = Resources.FindObjectsOfTypeAll(typeof(Shader));
 
         shaderBuffer = new List<Shader>();
         ArrayList temp = new ArrayList();
@@ -1345,7 +1345,7 @@ public class LightmappingTool : EditorWindow
                 save = null;
                 EditorUtility.DisplayDialog("Cannot continue", "The UV packing cannot be done efficiently, consider a different lightmap arrangement", "OK");
                 EditorUtility.ClearProgressBar();
-                UnityEngine.Debug.LogError("The UV packing cannot be done or either cannot be done efficiently, consider a different lightmap arrangement");
+                UnityEngine.Debug.LogError("The UV packing cannot be done or cannot be done efficiently, consider a different lightmap arrangement");
             }
         }
         System.GC.Collect();

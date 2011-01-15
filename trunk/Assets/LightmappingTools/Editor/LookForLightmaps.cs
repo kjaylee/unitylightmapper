@@ -19,8 +19,6 @@ public class LookForLightmaps : AssetPostprocessor
     {
         LightmappingTool.LoadObjects();
         if (LightmappingTool.window!=null) LightmappingTool.window.Repaint();
-        
-
 
         bool Found=false;
         foreach (string i in importedAssets)
@@ -44,13 +42,12 @@ public class LookForLightmaps : AssetPostprocessor
         {
             foreach (string f in Directory.GetFiles(Application.dataPath + LightmappingTool.LMdir.Replace("<sceneName>", Path.GetFileNameWithoutExtension(EditorApplication.currentScene))))
             {
-
                 for (int i = 1; i < LightmappingTool.numberOfLightmaps+1; i++)
                 {
                     if (Path.GetFileName(f) == "lightmap" + i + LightmappingTool.fileFormat)
                     {
                         Texture2D tex = (Texture2D)AssetDatabase.LoadAssetAtPath(f.Substring(Application.dataPath.Length - 6), typeof(Texture2D));
-                        data[i-1].lightmap = tex;
+                        data[i-1].lightmapFar = tex;
                         loaded.Add(i);
                     }
                 }
